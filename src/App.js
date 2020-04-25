@@ -1,29 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-monokai";
+import { Parser } from 'acorn';
+import Editor from './components/editor';
+import renderFigureData from './components/renderFigureData';
 
 function App() {
+  const [program, setProgram] = useState("line1 = line([153, 118], [421, 234]);");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [SVGComponent, setSVGComponent] = useState(null);
+
+  useEffect(() => {
+    try {
+      const programNodes = Parser.parse(program);
+
+      const newSVGComponent = [];
+
+      for (const node of programNodes.body) {
+        const data = renderFigureData(node);
+
+        console.log(data);
+
+        if (data.type === "line") {
+          newSVGComponent.push(
+            <line x1={data.p1[0]} y1={data.p1[1]} x2={data.p2[0]} y2={data.p2[1]} stroke="black" key={data.name}/>
+          )
+        }
+      }
+
+      setSVGComponent(newSVGComponent);
+      console.log(newSVGComponent)
+
+      setErrorMessage("");
+    } catch (e) {
+      setSVGComponent(null);
+      setErrorMessage(`${e}`);
+    }
+  }, [program]);
+
   return (
     <div className="App">
       <div className="wrapper">
-        <AceEditor
-          mode="javascript"
-          theme="monokai"
-          name="UNIQUE_ID_OF_DIV"
-          width="50%"
-          height="100vh"
-          fontSize={20}
-          editorProps={{ $blockScrolling: true }}
-          value={`function onLoad(editor) {
-  console.log("i've loaded");
-}`}
+        <Editor 
+          program={program}
+          onChange={setProgram}
         />
-        <svg width="500" height="500" >
-          <line x1="10" y1="10" x2="300" y2="300" style={{stroke:"rgb(255,0,0)",strokeWidth:2}} />
+        <svg width="600" height="600" viewBox="0, 0, 600, 600">
+          {errorMessage ? <text x="20" y="20">{errorMessage}</text> : null}
+          {SVGComponent}
         </svg>
+        <br/>
       </div>
     </div>
   );

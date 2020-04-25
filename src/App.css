@@ -40,3 +40,8 @@
 .wrapper {
   display: flex;
 }
+
+svg {
+  border: 4px solid;
+  margin: 4px;
+}
