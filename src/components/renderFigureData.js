@@ -1,6 +1,6 @@
 export default (node) => {
 
-  console.log(node)
+  //console.log(node)
 
   if (node.type === "ExpressionStatement") {
     const exp = node.expression;
