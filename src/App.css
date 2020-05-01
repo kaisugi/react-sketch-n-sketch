@@ -45,3 +45,8 @@ svg {
   border: 1px solid;
   margin: 4px;
 }
+
+.panel {
+  text-align: left;
+  margin: 10px;
+}

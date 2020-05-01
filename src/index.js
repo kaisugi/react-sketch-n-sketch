@@ -3,11 +3,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { ZEITUIProvider } from '@zeit-ui/react'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <ZEITUIProvider> 
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </ZEITUIProvider>,
   document.getElementById('root')
 );
 

@@ -4,4 +4,4 @@ Reimplementation of [Sketch-n-Sketch](http://ravichugh.github.io/sketch-n-sketch
 
 ## Notice
 
-- Window size must be 1200>px width
+- Window size must be over 1220px width
