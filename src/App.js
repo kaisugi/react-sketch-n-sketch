@@ -11,7 +11,7 @@ const defaultProgram =
 
 rect1 = rect([025, 300], 120, 150);
 
-ellipse1 = ellipse([425, 300], 10, 20)`
+ellipse1 = ellipse([425, 300], 10, 20);`
 
 
 function App() {
@@ -24,7 +24,10 @@ function App() {
    * 
    * type 
    * 0: 直線
-   * 1: 長方形
+   * 1: 長方形の左上
+   * 2: 長方形の右上
+   * 3: 長方形の左下
+   * 4: 長方形の右下
    */
   const [pointsToPos, setPointsToPos] = useState(null); 
 
@@ -52,8 +55,9 @@ function App() {
               type: 0,
               point: { data: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
             });
+
+            const leftPoint = (data.p1[0] < data.p2[0]) ? data.p1 : data.p2;
   
-            // TODO: 常にキャプションが左側につくようにする
             newSVGComponent.push(
               <>
                 <line 
@@ -70,7 +74,7 @@ function App() {
                 />
                 {isWidgetsOn ? (
                   <>
-                    <text x={data.p1[0] - 20} y={data.p1[1] - 20}>{data.name}</text> 
+                    <text x={leftPoint[0] - 20} y={leftPoint[1] - 20}>{data.name}</text> 
                     <circle cx={data.p1[0]} cy={data.p1[1]} r="7" stroke="black" fill="#fff" strokeWidth="2" />
                     <circle cx={data.p2[0]} cy={data.p2[1]} r="7" stroke="black" fill="#fff" strokeWidth="2" />
                   </>
@@ -79,7 +83,7 @@ function App() {
             )
             break;
 
-          case "rect":
+          case "rect":      
             newSVGComponent.push(
               <>
                 <rect
@@ -106,13 +110,16 @@ function App() {
             )
 
             newPointsToPos.push({
-              type: 0, 
-              point: { data: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd }
+              type: 1, 
+              point: { data: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
+              width: { data: data.width, start: data.widthStart, end: data.widthEnd },
+              height: { data: data.height, start: data.heightStart, end: data.heightEnd }
             });
             newPointsToPos.push({
-              type: 1,
-              point: { data: [data.p[0]+data.width, data.p[1]], start: data.pStart, end: data.pEnd },
-              width: { data: data.width, start: data.widthStart, end: data.widthEnd}
+              type: 2, 
+              point: { data: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
+              width: { data: data.width, start: data.widthStart, end: data.widthEnd },
+              height: { data: data.height, start: data.heightStart, end: data.heightEnd }
             });
 
             break;
@@ -201,17 +208,33 @@ function App() {
         }
       }
 
+      const currentProgram = program;
+      const paddingX = `000${currentX}`.slice(-3);
+      const paddingY = `000${currentY}`.slice(-3);
+      let newProgram;
+      let start;
+      let end;
+
       switch (tmpMap.type) {
         case 0:
-          const start = tmpMap["point"]["start"];
-          const end = tmpMap["point"]["end"];
+          start = tmpMap["point"]["start"];
+          end = tmpMap["point"]["end"];
 
-          const currentProgram = program;
+          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}]${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
 
-          const paddingX = `000${currentX}`.slice(-3);
-          const paddingY = `000${currentY}`.slice(-3);
+        case 1:
+          start = tmpMap["point"]["start"];
+          end = tmpMap["height"]["end"];
 
-          const newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}]${currentProgram.slice(end)}`;
+          const currentWidth = Math.abs(tmpMap["point"]["data"][0] + tmpMap["width"]["data"] - currentX);
+          const currentHeight = Math.abs(tmpMap["point"]["data"][1] + tmpMap["height"]["data"] - currentY);
+
+          const paddingWidth = `000${currentWidth}`.slice(-3);
+          const paddingHeight = `000${currentHeight}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
