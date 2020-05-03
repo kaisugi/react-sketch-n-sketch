@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Parser } from 'acorn';
 import { Checkbox, Radio, Spacer } from '@zeit-ui/react'
+import { SketchPicker } from 'react-color';
+import reactCSS from 'reactcss'
 import Editor from './components/editor';
 import renderFigureData from './components/renderFigureData';
 
@@ -44,6 +46,39 @@ function App() {
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isWidgetsOn, setIsWidgetsOn] = useState(true); 
+  const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const [color, setColor] = useState("#c13030");
+
+  const styles = reactCSS({
+    'default': {
+      color: {
+        width: '36px',
+        height: '14px',
+        borderRadius: '2px',
+        background: color,
+      },
+      swatch: {
+        padding: '5px',
+        background: '#fff',
+        borderRadius: '1px',
+        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+        display: 'inline-block',
+        cursor: 'pointer',
+      },
+      popover: {
+        position: 'absolute',
+        zIndex: '4',
+      },
+      cover: {
+        position: 'fixed',
+        top: 'px',
+        right: '0px',
+        bottom: '0px',
+        left: '0px',
+      },
+    },
+  });
+
 
   useEffect(() => {
     try {
@@ -268,6 +303,18 @@ function App() {
     setMode(val)
   }
 
+  const handleColorPickerClick = () => {
+    setDisplayColorPicker(!displayColorPicker);
+  }
+
+  const handleColorPickerClose = () => {
+    setDisplayColorPicker(false);
+  };
+
+  const handleColorPickerChange = (color) => {
+    setColor(color.hex)
+  };
+
   const movePoints = (currentX, currentY) => {    
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
@@ -485,6 +532,10 @@ function App() {
           />
           <div className="output">
             <div>
+              { displayColorPicker ? <div style={ styles.popover }>
+                <div style={ styles.cover } onClick={ handleColorPickerClose }/>
+                <SketchPicker color={ color } onChange={ handleColorPickerChange } />
+              </div> : null }
               <svg 
                 width="600" 
                 height="600" 
@@ -505,6 +556,14 @@ function App() {
                 <Radio value={1}>MOVE</Radio>
                 <Radio value={2}>DELETE</Radio>
               </Radio.Group>
+              <Spacer x={5}/>
+              <Radio.Group value={mode} onChange={handleMode}>
+                <Radio value={3}>CHANGE COLOR</Radio>
+              </Radio.Group>
+              <Spacer x={2}/>
+              <div style={ styles.swatch } onClick={ handleColorPickerClick }>
+                <div style={ styles.color } />
+              </div>
             </div>
           </div>
           <br/>
