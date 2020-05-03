@@ -37,7 +37,7 @@ export default (node) => {
         return {
           type: "ellipse",
           name: exp.left.name,
-          p: exp.right.arguments[0].elements.map(n => n.raw),
+          p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),
           rx: Number(exp.right.arguments[1].raw),

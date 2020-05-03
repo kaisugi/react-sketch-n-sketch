@@ -11,7 +11,7 @@ const defaultProgram =
 
 rect1 = rect([025, 300], 120, 150);
 
-ellipse1 = ellipse([425, 300], 10, 20);`
+ellipse1 = ellipse([425, 300], 60, 120);`
 
 
 function App() {
@@ -28,6 +28,10 @@ function App() {
    * 2: 長方形の右上
    * 3: 長方形の左下
    * 4: 長方形の右下
+   * 5: 楕円の右
+   * 6: 楕円の上
+   * 7: 楕円の左
+   * 8: 楕円の下
    */
   const [pointsToPos, setPointsToPos] = useState(null); 
 
@@ -49,11 +53,11 @@ function App() {
           case "line":
             newPointsToPos.push({
               type: 0, 
-              point: { data: [data.p1[0], data.p1[1]], start: data.p1Start, end: data.p1End }
+              point: { value: [data.p1[0], data.p1[1]], start: data.p1Start, end: data.p1End }
             });
             newPointsToPos.push({
               type: 0,
-              point: { data: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
+              point: { value: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
             });
 
             const leftPoint = (data.p1[0] < data.p2[0]) ? data.p1 : data.p2;
@@ -111,15 +115,27 @@ function App() {
 
             newPointsToPos.push({
               type: 1, 
-              point: { data: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
-              width: { data: data.width, start: data.widthStart, end: data.widthEnd },
-              height: { data: data.height, start: data.heightStart, end: data.heightEnd }
+              point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
+              width: { value: data.width, start: data.widthStart, end: data.widthEnd },
+              height: { value: data.height, start: data.heightStart, end: data.heightEnd }
             });
             newPointsToPos.push({
               type: 2, 
-              point: { data: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
-              width: { data: data.width, start: data.widthStart, end: data.widthEnd },
-              height: { data: data.height, start: data.heightStart, end: data.heightEnd }
+              point: { value: [data.p[0]+data.width, data.p[1]], start: data.pStart, end: data.pEnd },
+              width: { value: data.width, start: data.widthStart, end: data.widthEnd },
+              height: { value: data.height, start: data.heightStart, end: data.heightEnd }
+            });
+            newPointsToPos.push({
+              type: 3, 
+              point: { value: [data.p[0], data.p[1]+data.height], start: data.pStart, end: data.pEnd },
+              width: { value: data.width, start: data.widthStart, end: data.widthEnd },
+              height: { value: data.height, start: data.heightStart, end: data.heightEnd }
+            });
+            newPointsToPos.push({
+              type: 4, 
+              point: { value: [data.p[0]+data.width, data.p[1]+data.height], start: data.pStart, end: data.pEnd },
+              width: { value: data.width, start: data.widthStart, end: data.widthEnd },
+              height: { value: data.height, start: data.heightStart, end: data.heightEnd }
             });
 
             break;
@@ -140,7 +156,11 @@ function App() {
                 />
                 {isWidgetsOn ? (
                   <>
-                    <text x={data.p[0] - 20} y={data.p[1] - 20}>{data.name}</text>
+                    <text x={data.p[0]-data.rx-20} y={data.p[1]-data.ry-20}>{data.name}</text>
+                    <circle cx={data.p[0]+data.rx} cy={data.p[1]} r="7" stroke="black" fill="#fff" strokeWidth="2" />
+                    <circle cx={data.p[0]} cy={data.p[1]+data.ry} r="7" stroke="black" fill="#fff" strokeWidth="2" />
+                    <circle cx={data.p[0]-data.rx} cy={data.p[1]} r="7" stroke="black" fill="#fff" strokeWidth="2" />
+                    <circle cx={data.p[0]} cy={data.p[1]-data.ry} r="7" stroke="black" fill="#fff" strokeWidth="2" />
                     <circle cx={data.p[0]} cy={data.p[1]} r="7" stroke="black" fill="#fff" strokeWidth="2" />
                   </>
                 ) : null}
@@ -148,8 +168,32 @@ function App() {
             )
 
             newPointsToPos.push({
+              type: 5, 
+              point: { value: [data.p[0]+data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
+              rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
+              ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
+            });
+            newPointsToPos.push({
+              type: 6, 
+              point: { value: [data.p[0], data.p[1]+data.ry], start: data.pStart, end: data.pEnd },
+              rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
+              ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
+            });
+            newPointsToPos.push({
+              type: 7, 
+              point: { value: [data.p[0]-data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
+              rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
+              ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
+            });
+            newPointsToPos.push({
+              type: 8, 
+              point: { value: [data.p[0], data.p[1]-data.ry], start: data.pStart, end: data.pEnd },
+              rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
+              ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
+            });
+            newPointsToPos.push({
               type: 0, 
-              point: { data: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd }
+              point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
             });
 
             break;
@@ -196,12 +240,12 @@ function App() {
     if (currentY <= 0 || currentY >= 600) return;
 
     let min = 100000000000000;
-    let tmpMap = null;
+    let tmpMap;
 
     if (pointsToPos) {
       for (const m of pointsToPos) {
-        const tmp = (currentX - m["point"]["data"][0]) * (currentX - m["point"]["data"][0]) 
-          + (currentY - m["point"]["data"][1]) * (currentY - m["point"]["data"][1]);
+        const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
+          + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
         if (tmp < min) {
           min = tmp;
           tmpMap = m;
@@ -209,16 +253,30 @@ function App() {
       }
 
       const currentProgram = program;
-      const paddingX = `000${currentX}`.slice(-3);
-      const paddingY = `000${currentY}`.slice(-3);
+      let paddingX;
+      let paddingY;
       let newProgram;
       let start;
       let end;
+
+      let currentWidth;
+      let currentHeight;
+      let paddingWidth;
+      let paddingHeight;
+
+      let currentRx;
+      let currentRy;
+      let paddingRx;
+      let paddingRy;
+
 
       switch (tmpMap.type) {
         case 0:
           start = tmpMap["point"]["start"];
           end = tmpMap["point"]["end"];
+
+          paddingX = `000${currentX}`.slice(-3);
+          paddingY = `000${currentY}`.slice(-3);
 
           newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}]${currentProgram.slice(end)}`;
           setProgram(newProgram);
@@ -228,13 +286,115 @@ function App() {
           start = tmpMap["point"]["start"];
           end = tmpMap["height"]["end"];
 
-          const currentWidth = Math.abs(tmpMap["point"]["data"][0] + tmpMap["width"]["data"] - currentX);
-          const currentHeight = Math.abs(tmpMap["point"]["data"][1] + tmpMap["height"]["data"] - currentY);
+          currentWidth = Math.abs(tmpMap["point"]["value"][0] + tmpMap["width"]["value"] - currentX);
+          currentHeight = Math.abs(tmpMap["point"]["value"][1] + tmpMap["height"]["value"] - currentY);
 
-          const paddingWidth = `000${currentWidth}`.slice(-3);
-          const paddingHeight = `000${currentHeight}`.slice(-3);
+          paddingX = `000${currentX}`.slice(-3);
+          paddingY = `000${currentY}`.slice(-3);
+          paddingWidth = `000${currentWidth}`.slice(-3);
+          paddingHeight = `000${currentHeight}`.slice(-3);
 
           newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 2:
+          start = tmpMap["point"]["start"];
+          end = tmpMap["height"]["end"];
+
+          currentWidth = Math.abs(tmpMap["point"]["value"][0] - tmpMap["width"]["value"] - currentX);
+          currentHeight = Math.abs(tmpMap["point"]["value"][1] + tmpMap["height"]["value"] - currentY);
+
+          paddingX = `000${tmpMap["point"]["value"][0] - tmpMap["width"]["value"]}`.slice(-3);
+          paddingY = `000${currentY}`.slice(-3);
+          paddingWidth = `000${currentWidth}`.slice(-3);
+          paddingHeight = `000${currentHeight}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 3:
+          start = tmpMap["point"]["start"];
+          end = tmpMap["height"]["end"];
+
+          currentWidth = Math.abs(tmpMap["point"]["value"][0] + tmpMap["width"]["value"] - currentX);
+          currentHeight = Math.abs(tmpMap["point"]["value"][1] - tmpMap["height"]["value"] - currentY);
+
+          paddingX = `000${currentX}`.slice(-3);
+          paddingY = `000${tmpMap["point"]["value"][1] - tmpMap["height"]["value"]}`.slice(-3);
+          paddingWidth = `000${currentWidth}`.slice(-3);
+          paddingHeight = `000${currentHeight}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 4:
+          start = tmpMap["point"]["start"];
+          end = tmpMap["height"]["end"];
+
+          currentWidth = Math.abs(tmpMap["point"]["value"][0] - tmpMap["width"]["value"] - currentX);
+          currentHeight = Math.abs(tmpMap["point"]["value"][1] - tmpMap["height"]["value"] - currentY);
+
+          paddingX = `000${tmpMap["point"]["value"][0] - tmpMap["width"]["value"]}`.slice(-3);
+          paddingY = `000${tmpMap["point"]["value"][1] - tmpMap["height"]["value"]}`.slice(-3);
+          paddingWidth = `000${currentWidth}`.slice(-3);
+          paddingHeight = `000${currentHeight}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 5:
+          start = tmpMap["rx"]["start"];
+          end = tmpMap["ry"]["end"];
+
+          currentRx = Math.abs(tmpMap["point"]["value"][0] - tmpMap["rx"]["value"] - currentX);
+          currentRy = tmpMap["ry"]["value"];
+          paddingRx = `000${currentRx}`.slice(-3);
+          paddingRy = `000${currentRy}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 6:
+          start = tmpMap["rx"]["start"];
+          end = tmpMap["ry"]["end"];
+
+          currentRx = tmpMap["rx"]["value"];
+          currentRy = Math.abs(tmpMap["point"]["value"][1] - tmpMap["ry"]["value"] - currentY);
+          paddingRx = `000${currentRx}`.slice(-3);
+          paddingRy = `000${currentRy}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 7:
+          start = tmpMap["rx"]["start"];
+          end = tmpMap["ry"]["end"];
+
+          currentRx = Math.abs(tmpMap["point"]["value"][0] + tmpMap["rx"]["value"] - currentX);
+          currentRy = tmpMap["ry"]["value"];
+          paddingRx = `000${currentRx}`.slice(-3);
+          paddingRy = `000${currentRy}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          setProgram(newProgram);
+          break;
+
+        case 8:
+          start = tmpMap["rx"]["start"];
+          end = tmpMap["ry"]["end"];
+
+          currentRx = tmpMap["rx"]["value"];
+          currentRy = Math.abs(tmpMap["point"]["value"][1] + tmpMap["ry"]["value"] - currentY);
+          paddingRx = `000${currentRx}`.slice(-3);
+          paddingRy = `000${currentRy}`.slice(-3);
+
+          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
