@@ -10,6 +10,8 @@ export default (node) => {
         return {
           type: "line",
           name: exp.left.name,
+          start: exp.start,
+          end: exp.end,
           p1: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           p1Start: Number(exp.right.arguments[0].start),
           p1End: Number(exp.right.arguments[0].end),
@@ -22,6 +24,8 @@ export default (node) => {
         return {
           type: "rect",
           name: exp.left.name,
+          start: exp.start,
+          end: exp.end,
           p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),
@@ -37,6 +41,8 @@ export default (node) => {
         return {
           type: "ellipse",
           name: exp.left.name,
+          start: exp.start,
+          end: exp.end,
           p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),

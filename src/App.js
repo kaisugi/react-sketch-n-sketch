@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Parser } from 'acorn';
-import { Checkbox } from '@zeit-ui/react'
+import { Checkbox, Radio, Spacer } from '@zeit-ui/react'
 import Editor from './components/editor';
 import renderFigureData from './components/renderFigureData';
 
@@ -18,6 +18,13 @@ function App() {
   const [program, setProgram] = useState(defaultProgram);
   const [errorMessage, setErrorMessage] = useState("");
   const [SVGComponent, setSVGComponent] = useState(null); // 描画する SVG の Component
+
+  /**
+   * 操作モード
+   * 0: オブジェクト追加
+   * 1: オブジェクト編集
+   */
+  const [mode, setMode] = useState(0);
 
   /**
    * 点の座標からプログラム上の位置へのマップ
@@ -51,15 +58,6 @@ function App() {
 
         switch (data.type) {
           case "line":
-            newPointsToPos.push({
-              type: 0, 
-              point: { value: [data.p1[0], data.p1[1]], start: data.p1Start, end: data.p1End }
-            });
-            newPointsToPos.push({
-              type: 0,
-              point: { value: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
-            });
-
             const leftPoint = (data.p1[0] < data.p2[0]) ? data.p1 : data.p2;
   
             newSVGComponent.push(
@@ -85,6 +83,18 @@ function App() {
                 ) : null}
               </>
             )
+
+            newPointsToPos.push({
+              type: 0, 
+              object: { start: data.start, end: data.end },
+              point: { value: [data.p1[0], data.p1[1]], start: data.p1Start, end: data.p1End }
+            });
+            newPointsToPos.push({
+              type: 0,
+              object: { start: data.start, end: data.end },
+              point: { value: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
+            });
+
             break;
 
           case "rect":      
@@ -115,24 +125,28 @@ function App() {
 
             newPointsToPos.push({
               type: 1, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
             });
             newPointsToPos.push({
               type: 2, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0]+data.width, data.p[1]], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
             });
             newPointsToPos.push({
               type: 3, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0], data.p[1]+data.height], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
             });
             newPointsToPos.push({
               type: 4, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0]+data.width, data.p[1]+data.height], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
@@ -169,30 +183,35 @@ function App() {
 
             newPointsToPos.push({
               type: 5, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0]+data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
             });
             newPointsToPos.push({
               type: 6, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0], data.p[1]+data.ry], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
             });
             newPointsToPos.push({
               type: 7, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0]-data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
             });
             newPointsToPos.push({
               type: 8, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0], data.p[1]-data.ry], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
             });
             newPointsToPos.push({
               type: 0, 
+              object: { start: data.start, end: data.end },
               point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
             });
 
@@ -220,19 +239,33 @@ function App() {
   }
 
   const handleMouseMove = (e) => {
+    const currentX = e.clientX - 605;
+    const currentY = e.clientY - 5;
+
     if (isMouseDown) {
-      const currentX = e.clientX - 605;
-      const currentY = e.clientY - 5;
-      movePoints(currentX, currentY);
+      if (mode === 1) {
+        movePoints(currentX, currentY);
+      }
     }
   }
 
   const handleMouseUp = (e) => {
     setIsMouseDown(false);
+
+    const currentX = e.clientX - 605;
+    const currentY = e.clientY - 5;
+
+    if (mode === 2) {
+      deleteObject(currentX, currentY);
+    }
   }
 
   const handleWidgetCheckBoxClick = (e) => {
     setIsWidgetsOn(!isWidgetsOn);
+  }
+
+  const handleMode = val => {
+    setMode(val)
   }
 
   const movePoints = (currentX, currentY) => {    
@@ -416,6 +449,32 @@ function App() {
     })
   }
 
+  const deleteObject = (currentX, currentY) => {  
+    if (currentX <= 0 || currentX >= 600) return;
+    if (currentY <= 0 || currentY >= 600) return;
+
+    let min = 100000000000000;
+    let tmpMap;
+
+    if (pointsToPos) {
+      for (const m of pointsToPos) {
+        const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
+          + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
+        if (tmp < min) {
+          min = tmp;
+          tmpMap = m;
+        }
+      }
+
+      const start = tmpMap["object"]["start"];
+      const end = tmpMap["object"]["end"];
+
+      const currentProgram = program;
+      const newProgram = `${currentProgram.slice(0, start)}${currentProgram.slice(end+1)}`;
+      setProgram(newProgram);
+    }
+  }
+
   return (
     (window.innerWidth > 1220) ? (
       <div className="App">
@@ -440,6 +499,12 @@ function App() {
             </div>
             <div className="panel">
               <Checkbox checked={isWidgetsOn} onChange={handleWidgetCheckBoxClick}>Show Widgets</Checkbox>
+              <Spacer x={5}/>
+              <Radio.Group value={mode} onChange={handleMode} useRow>
+                <Radio value={0}>CREATE</Radio>
+                <Radio value={1}>MOVE</Radio>
+                <Radio value={2}>DELETE</Radio>
+              </Radio.Group>
             </div>
           </div>
           <br/>
