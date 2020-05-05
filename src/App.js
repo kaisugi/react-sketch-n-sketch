@@ -631,8 +631,6 @@ function App() {
       default:
 
     }
-
-    setMode(1);
   }
 
   const deleteObject = (currentX, currentY) => {  
@@ -746,7 +744,8 @@ function App() {
               </svg>
             </div>
             <div className="panel">
-              <Checkbox checked={isWidgetsOn} onChange={handleWidgetCheckBoxClick}>Show Widgets</Checkbox>
+              <Checkbox checked={isWidgetsOn} onChange={handleWidgetCheckBoxClick}>Show Widgets</Checkbox>&nbsp;&nbsp;&nbsp;
+              <a href="https://github.com/7ma7X/react-sketch-n-sketch/blob/master/README.md" target="_blank" rel="noopener noreferrer">README</a>
               <Spacer y={1}/>
               <Radio.Group value={mode} onChange={handleMode} useRow>
                 <Radio value={0}>DRAW</Radio>
