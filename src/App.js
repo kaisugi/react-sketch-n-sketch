@@ -9,11 +9,11 @@ import renderFigureData from './components/renderFigureData';
 
 
 const defaultProgram = 
-`line1 = line([100, 100], [200, 200]);
+`line1 = line([100, 100], [200, 200], "#c13030");
 
-rect1 = rect([025, 300], 120, 150);
+rect1 = rect([25, 300], 120, 150, "#ffa500");
 
-ellipse1 = ellipse([425, 300], 60, 120);`
+ellipse1 = ellipse([425, 300], 60, 120, "#0000ff");`
 
 
 function App() {
@@ -104,7 +104,7 @@ function App() {
                   y2={data.p2[1]} 
                   rx="10px"
                   ry="2"
-                  stroke="#c13030" 
+                  stroke={data.color}
                   strokeWidth="5" 
                   strokeLinecap="round"
                   key={data.name}
@@ -122,11 +122,13 @@ function App() {
             newPointsToPos.push({
               type: 0, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p1[0], data.p1[1]], start: data.p1Start, end: data.p1End }
             });
             newPointsToPos.push({
               type: 0,
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
             });
 
@@ -140,8 +142,8 @@ function App() {
                   y={data.p[1]} 
                   width={data.width} 
                   height={data.height} 
-                  stroke="#c13030" 
-                  fill="#c13030"
+                  stroke={data.color}
+                  fill={data.color}
                   strokeWidth="5" 
                   strokeLinecap="round"
                   key={data.name}
@@ -161,6 +163,7 @@ function App() {
             newPointsToPos.push({
               type: 1, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
@@ -168,6 +171,7 @@ function App() {
             newPointsToPos.push({
               type: 2, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]+data.width, data.p[1]], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
@@ -175,6 +179,7 @@ function App() {
             newPointsToPos.push({
               type: 3, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]+data.height], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
@@ -182,6 +187,7 @@ function App() {
             newPointsToPos.push({
               type: 4, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]+data.width, data.p[1]+data.height], start: data.pStart, end: data.pEnd },
               width: { value: data.width, start: data.widthStart, end: data.widthEnd },
               height: { value: data.height, start: data.heightStart, end: data.heightEnd }
@@ -197,8 +203,8 @@ function App() {
                   cy={data.p[1]} 
                   rx={data.rx} 
                   ry={data.ry} 
-                  stroke="#c13030" 
-                  fill="#c13030"
+                  stroke={data.color}
+                  fill={data.color}
                   strokeWidth="5" 
                   strokeLinecap="round"
                   key={data.name}
@@ -219,6 +225,7 @@ function App() {
             newPointsToPos.push({
               type: 5, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]+data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
@@ -226,6 +233,7 @@ function App() {
             newPointsToPos.push({
               type: 6, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]+data.ry], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
@@ -233,6 +241,7 @@ function App() {
             newPointsToPos.push({
               type: 7, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]-data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
@@ -240,6 +249,7 @@ function App() {
             newPointsToPos.push({
               type: 8, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]-data.ry], start: data.pStart, end: data.pEnd },
               rx: { value: data.rx, start: data.rxStart, end: data.rxEnd },
               ry: { value: data.ry, start: data.ryStart, end: data.ryEnd }
@@ -247,6 +257,7 @@ function App() {
             newPointsToPos.push({
               type: 0, 
               object: { start: data.start, end: data.end },
+              color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
             });
 
@@ -292,7 +303,9 @@ function App() {
 
     if (mode === 2) {
       deleteObject(currentX, currentY);
-    }
+    } else if (mode === 3) {
+      changeColor(currentX, currentY);
+    } 
   }
 
   const handleWidgetCheckBoxClick = (e) => {
@@ -485,11 +498,11 @@ function App() {
 
   // ゼロ埋めを見た目消す
   const deleteZeroPadding = (program) => {
-    return program.replace(/\d{3}/gi, (match) => {
-      if (match[0] === '0' && match[1] === '0') {
-        return match[2]
-      } else if (match[0] === '0') {
-        return match[1] + match[2]
+    return program.replace(/[^\da-f](\d{3})[^\da-f]/gi, (match) => {
+      if (match[1] === '0' && match[2] === '0') {
+        return match[0] + match[3] + match[4]
+      } else if (match[1] === '0') {
+        return match[0] + match[2] + match[3] + match[4]
       } else {
         return match;
       }
@@ -518,6 +531,32 @@ function App() {
 
       const currentProgram = program;
       const newProgram = `${currentProgram.slice(0, start)}${currentProgram.slice(end+1)}`;
+      setProgram(newProgram);
+    }
+  }
+
+  const changeColor = (currentX, currentY) => {  
+    if (currentX <= 0 || currentX >= 600) return;
+    if (currentY <= 0 || currentY >= 600) return;
+
+    let min = 100000000000000;
+    let tmpMap;
+
+    if (pointsToPos) {
+      for (const m of pointsToPos) {
+        const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
+          + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
+        if (tmp < min) {
+          min = tmp;
+          tmpMap = m;
+        }
+      }
+
+      const start = tmpMap["color"]["start"];
+      const end = tmpMap["color"]["end"];
+
+      const currentProgram = program;
+      const newProgram = `${currentProgram.slice(0, start)}"${color}"${currentProgram.slice(end)}`;
       setProgram(newProgram);
     }
   }
