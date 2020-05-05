@@ -9,9 +9,11 @@ export default (node) => {
       case "line":
         return {
           type: "line",
-          name: exp.left.name,
           start: exp.start,
           end: exp.end,
+          name: exp.left.name,
+          nameStart: exp.left.start,
+          nameEnd: exp.left.end,
           p1: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           p1Start: Number(exp.right.arguments[0].start),
           p1End: Number(exp.right.arguments[0].end),
@@ -26,9 +28,11 @@ export default (node) => {
       case "rect":
         return {
           type: "rect",
-          name: exp.left.name,
           start: exp.start,
           end: exp.end,
+          name: exp.left.name,
+          nameStart: exp.left.start,
+          nameEnd: exp.left.end,
           p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),
@@ -46,9 +50,11 @@ export default (node) => {
       case "ellipse":
         return {
           type: "ellipse",
-          name: exp.left.name,
           start: exp.start,
           end: exp.end,
+          name: exp.left.name,
+          nameStart: exp.left.start,
+          nameEnd: exp.left.end,
           p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),

@@ -1,32 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Parser } from 'acorn';
-import { Checkbox, Radio, Spacer } from '@zeit-ui/react'
+import { Checkbox, Input, Radio, Spacer } from '@zeit-ui/react'
 import { SketchPicker } from 'react-color';
 import reactCSS from 'reactcss'
 import Editor from './components/editor';
 import renderFigureData from './components/renderFigureData';
 
 
-const defaultProgram = 
-`line1 = line([100, 100], [200, 200], "#c13030");
+const defaultProgram = "";
 
-rect1 = rect([25, 300], 120, 150, "#ffa500");
 
-ellipse1 = ellipse([425, 300], 60, 120, "#0000ff");`
+const defaultColors = 
+  ['#D0021B', '#F5A623', '#F8E71C', '#8B572A', '#7ED321', 
+  '#417505', '#BD10E0', '#9013FE', '#4A90E2', '#50E3C2', 
+  '#B8E986', '#000000', '#4A4A4A', '#9B9B9B', '#FFFFFF',
+  '#187FC4', '#FABE00']
 
 
 function App() {
   const [program, setProgram] = useState(defaultProgram);
   const [errorMessage, setErrorMessage] = useState("");
   const [SVGComponent, setSVGComponent] = useState(null); // 描画する SVG の Component
+  const [counter, setCounter] = useState(1);
 
-  /**
-   * 操作モード
-   * 0: オブジェクト追加
-   * 1: オブジェクト編集
-   */
   const [mode, setMode] = useState(0);
+  const [drawMode, setDrawMode] = useState(0);
 
   /**
    * 点の座標からプログラム上の位置へのマップ
@@ -44,10 +43,14 @@ function App() {
    */
   const [pointsToPos, setPointsToPos] = useState(null); 
 
+  const [startX, setStartX] = useState(null);
+  const [startY, setStartY] = useState(null);
+
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isWidgetsOn, setIsWidgetsOn] = useState(true); 
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [color, setColor] = useState("#c13030");
+  const [varName, setVarName] = useState("");
 
   const styles = reactCSS({
     'default': {
@@ -121,12 +124,14 @@ function App() {
 
             newPointsToPos.push({
               type: 0, 
+              name: { start: data.nameStart, end: data.nameEnd }, 
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p1[0], data.p1[1]], start: data.p1Start, end: data.p1End }
             });
             newPointsToPos.push({
               type: 0,
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p2[0], data.p2[1]], start: data.p2Start, end: data.p2End }
@@ -162,6 +167,7 @@ function App() {
 
             newPointsToPos.push({
               type: 1, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
@@ -170,6 +176,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 2, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]+data.width, data.p[1]], start: data.pStart, end: data.pEnd },
@@ -178,6 +185,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 3, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]+data.height], start: data.pStart, end: data.pEnd },
@@ -186,6 +194,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 4, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]+data.width, data.p[1]+data.height], start: data.pStart, end: data.pEnd },
@@ -224,6 +233,7 @@ function App() {
 
             newPointsToPos.push({
               type: 5, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]+data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
@@ -232,6 +242,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 6, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]+data.ry], start: data.pStart, end: data.pEnd },
@@ -240,6 +251,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 7, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0]-data.rx, data.p[1]], start: data.pStart, end: data.pEnd },
@@ -248,6 +260,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 8, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]-data.ry], start: data.pStart, end: data.pEnd },
@@ -271,8 +284,6 @@ function App() {
       setErrorMessage("");
       setSVGComponent(newSVGComponent);
       setPointsToPos(newPointsToPos);
-
-      //console.log(newPointsToPos)
     } catch (e) {
       setErrorMessage(`${e}`);
       setSVGComponent(null);
@@ -282,6 +293,14 @@ function App() {
 
   const handleMouseDown = (e) => {
     setIsMouseDown(true);
+
+    const currentX = e.clientX - 605;
+    const currentY = e.clientY - 5;
+
+    if (mode === 0) {
+      setStartX(currentX);
+      setStartY(currentY);
+    }
   }
 
   const handleMouseMove = (e) => {
@@ -305,7 +324,11 @@ function App() {
       deleteObject(currentX, currentY);
     } else if (mode === 3) {
       changeColor(currentX, currentY);
-    } 
+    } else if (mode === 0) {
+      drawObject(currentX, currentY);
+    } else if (mode === 4) {
+      changeVarName(currentX, currentY);
+    }
   }
 
   const handleWidgetCheckBoxClick = (e) => {
@@ -314,6 +337,10 @@ function App() {
 
   const handleMode = val => {
     setMode(val)
+  }
+
+  const handleDrawMode = val => {
+    setDrawMode(val);
   }
 
   const handleColorPickerClick = () => {
@@ -328,6 +355,10 @@ function App() {
     setColor(color.hex)
   };
 
+  const handleInputChange = (e) => {
+    setVarName(e.target.value);
+  }
+
   const movePoints = (currentX, currentY) => {    
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
@@ -335,7 +366,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos) {
+    if (pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -509,6 +540,50 @@ function App() {
     })
   }
 
+  const drawObject = (currentX, currentY) => {
+    let currentProgram = program;
+
+    setCounter(counter + 1);
+
+    const optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
+    switch (drawMode) {
+      case 0:
+        currentProgram += `${optionalNewLine}line${counter} = line([${startX}, ${startY}], [${currentX}, ${currentY}], "${color}")`
+        setProgram(currentProgram)
+        break;
+
+      case 1:
+        const leftUpX = Math.min(startX, currentX);
+        const leftUpY = Math.min(startY, currentY);
+        const width = Math.max(startX, currentX) - leftUpX;
+        const height = Math.max(startY, currentY) - leftUpY;
+        const paddingWidth = `000${width}`.slice(-3);
+        const paddingHeight = `000${height}`.slice(-3);
+
+        currentProgram += `${optionalNewLine}rect${counter} = rect([${leftUpX}, ${leftUpY}], ${paddingWidth}, ${paddingHeight}, "${color}")`
+        setProgram(currentProgram)
+        break;
+
+      case 2:
+        const centerX = Math.floor((startX + currentX) / 2);
+        const centerY = Math.floor((startY + currentY) / 2);
+        const rx = Math.max(startX, currentX) - centerX;
+        const ry = Math.max(startY, currentY) - centerY;
+        const paddingRx = `000${rx}`.slice(-3);
+        const paddingRy = `000${ry}`.slice(-3);
+
+        currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${centerX}, ${centerY}], ${paddingRx}, ${paddingRy}, "${color}");`
+        setProgram(currentProgram)
+        break;
+
+      default:
+
+    }
+
+    setMode(1);
+  }
+
   const deleteObject = (currentX, currentY) => {  
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
@@ -516,7 +591,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos) {
+    if (pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -530,7 +605,9 @@ function App() {
       const end = tmpMap["object"]["end"];
 
       const currentProgram = program;
-      const newProgram = `${currentProgram.slice(0, start)}${currentProgram.slice(end+1)}`;
+      const newProgram = `${currentProgram.slice(0, start)}${currentProgram.slice(end+1)}`
+        .replace("\n\n", "\n")
+        .replace(/^\n/, "");
       setProgram(newProgram);
     }
   }
@@ -542,7 +619,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos) {
+    if (pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -556,7 +633,33 @@ function App() {
       const end = tmpMap["color"]["end"];
 
       const currentProgram = program;
-      const newProgram = `${currentProgram.slice(0, start)}"${color}"${currentProgram.slice(end)}`;
+      const newProgram = `${currentProgram.slice(0, start)}"${color}"${currentProgram.slice(end)}`
+      setProgram(newProgram);
+    }
+  }
+
+  const changeVarName = (currentX, currentY) => {  
+    if (currentX <= 0 || currentX >= 600) return;
+    if (currentY <= 0 || currentY >= 600) return;
+
+    let min = 100000000000000;
+    let tmpMap;
+
+    if (pointsToPos.length > 0) {
+      for (const m of pointsToPos) {
+        const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
+          + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
+        if (tmp < min) {
+          min = tmp;
+          tmpMap = m;
+        }
+      }
+
+      const start = tmpMap["name"]["start"];
+      const end = tmpMap["name"]["end"];
+
+      const currentProgram = program;
+      const newProgram = `${currentProgram.slice(0, start)}${varName}${currentProgram.slice(end)}`
       setProgram(newProgram);
     }
   }
@@ -573,7 +676,7 @@ function App() {
             <div>
               { displayColorPicker ? <div style={ styles.popover }>
                 <div style={ styles.cover } onClick={ handleColorPickerClose }/>
-                <SketchPicker color={ color } onChange={ handleColorPickerChange } />
+                <SketchPicker presetColors={defaultColors} color={ color } onChange={ handleColorPickerChange } />
               </div> : null }
               <svg 
                 width="600" 
@@ -589,20 +692,34 @@ function App() {
             </div>
             <div className="panel">
               <Checkbox checked={isWidgetsOn} onChange={handleWidgetCheckBoxClick}>Show Widgets</Checkbox>
-              <Spacer x={5}/>
+              <Spacer y={1}/>
               <Radio.Group value={mode} onChange={handleMode} useRow>
-                <Radio value={0}>CREATE</Radio>
+                <Radio value={0}>DRAW</Radio>
+                <Radio.Group style={{opacity: (mode===0) ? 1: 0.2}}value={drawMode} onChange={handleDrawMode} useRow>
+                  <Spacer x={2}/>
+                  <Radio value={0}>line</Radio>
+                  <Radio value={1}>rectangle</Radio>
+                  <Radio value={2}>ellipse</Radio>
+                </Radio.Group>
+              </Radio.Group>
+              <Spacer y={1}/>
+              <Radio.Group value={mode} onChange={handleMode} useRow>
+                <Radio value={3}>CHANGE COLOR</Radio>
+                <Spacer x={1}/>
+                <div style={ styles.swatch } onClick={ handleColorPickerClick }>
+                  <div style={ styles.color } />
+                </div>
+                <Spacer x={1}/>
                 <Radio value={1}>MOVE</Radio>
+                <Spacer x={1}/>
                 <Radio value={2}>DELETE</Radio>
               </Radio.Group>
-              <Spacer x={5}/>
-              <Radio.Group value={mode} onChange={handleMode}>
-                <Radio value={3}>CHANGE COLOR</Radio>
+              <Spacer y={1}/>
+              <Radio.Group value={mode} onChange={handleMode} useRow>
+                <Radio value={4}>CHANGE VARIABLE NAME</Radio>
+                <Spacer x={1}/>
+                <Input label="new name" initialValue="" onChange={handleInputChange} />
               </Radio.Group>
-              <Spacer x={2}/>
-              <div style={ styles.swatch } onClick={ handleColorPickerClick }>
-                <div style={ styles.color } />
-              </div>
             </div>
           </div>
           <br/>
