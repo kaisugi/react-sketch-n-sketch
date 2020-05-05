@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Parser } from 'acorn';
-import { Checkbox, Input, Radio, Spacer } from '@zeit-ui/react'
+import { Button, Checkbox, Input, Modal, Radio, Spacer } from '@zeit-ui/react'
 import { SketchPicker } from 'react-color';
 import reactCSS from 'reactcss'
 import Editor from './components/editor';
@@ -18,10 +18,17 @@ const defaultColors =
   '#187FC4', '#FABE00']
 
 
+const fillzero = str => {
+  return `000${str}`.slice(-3);
+}
+
+
 function App() {
   const [program, setProgram] = useState(defaultProgram);
+  const [groupProgramNodes, setGroupProgamNodes] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [SVGComponent, setSVGComponent] = useState(null); // 描画する SVG の Component
+  const [SVGComponent, setSVGComponent] = useState(null);
+  const [optionalSVGComponent, setOptionalSVGComponent] = useState(null);
   const [counter, setCounter] = useState(1);
 
   const [mode, setMode] = useState(0);
@@ -48,6 +55,7 @@ function App() {
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isWidgetsOn, setIsWidgetsOn] = useState(true); 
+  const [modalState, setModalState] = useState(false);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [color, setColor] = useState("#c13030");
   const [varName, setVarName] = useState("");
@@ -310,6 +318,20 @@ function App() {
     if (isMouseDown) {
       if (mode === 1) {
         movePoints(currentX, currentY);
+      } else if (mode === 0) {
+        setOptionalSVGComponent(
+          <rect
+            x={Math.min(startX, currentX)} 
+            y={Math.min(startY, currentY)} 
+            width={Math.max(startX, currentX) - Math.min(startX, currentX) - 5} 
+            height={Math.max(startY, currentY) - Math.min(startY, currentY)} 
+            stroke="black"
+            strokeDasharray="4 4"
+            fill="none"
+            strokeWidth="2" 
+            strokeLinecap="round"
+          />
+        )
       }
     }
   }
@@ -325,10 +347,15 @@ function App() {
     } else if (mode === 3) {
       changeColor(currentX, currentY);
     } else if (mode === 0) {
+      setOptionalSVGComponent(null);
       drawObject(currentX, currentY);
     } else if (mode === 4) {
       changeVarName(currentX, currentY);
     }
+  }
+
+  const handleModalClose = () => {
+    setModalState(false);
   }
 
   const handleWidgetCheckBoxClick = (e) => {
@@ -359,6 +386,11 @@ function App() {
     setVarName(e.target.value);
   }
 
+  const handleGroupButtonClick = () => {
+    setModalState(true);
+    setGroupProgamNodes(Parser.parse(program))
+  }
+
   const movePoints = (currentX, currentY) => {    
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
@@ -377,32 +409,24 @@ function App() {
       }
 
       const currentProgram = program;
-      let paddingX;
-      let paddingY;
+      let newX;
+      let newY;
       let newProgram;
       let start;
       let end;
 
       let currentWidth;
       let currentHeight;
-      let paddingWidth;
-      let paddingHeight;
 
       let currentRx;
       let currentRy;
-      let paddingRx;
-      let paddingRy;
-
 
       switch (tmpMap.type) {
         case 0:
           start = tmpMap["point"]["start"];
           end = tmpMap["point"]["end"];
 
-          paddingX = `000${currentX}`.slice(-3);
-          paddingY = `000${currentY}`.slice(-3);
-
-          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}]${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}[${fillzero(currentX)}, ${fillzero(currentY)}]${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -413,12 +437,7 @@ function App() {
           currentWidth = Math.abs(tmpMap["point"]["value"][0] + tmpMap["width"]["value"] - currentX);
           currentHeight = Math.abs(tmpMap["point"]["value"][1] + tmpMap["height"]["value"] - currentY);
 
-          paddingX = `000${currentX}`.slice(-3);
-          paddingY = `000${currentY}`.slice(-3);
-          paddingWidth = `000${currentWidth}`.slice(-3);
-          paddingHeight = `000${currentHeight}`.slice(-3);
-
-          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}[${fillzero(currentX)}, ${fillzero(currentY)}], ${fillzero(currentWidth)}, ${fillzero(currentHeight)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -429,12 +448,9 @@ function App() {
           currentWidth = Math.abs(tmpMap["point"]["value"][0] - tmpMap["width"]["value"] - currentX);
           currentHeight = Math.abs(tmpMap["point"]["value"][1] + tmpMap["height"]["value"] - currentY);
 
-          paddingX = `000${tmpMap["point"]["value"][0] - tmpMap["width"]["value"]}`.slice(-3);
-          paddingY = `000${currentY}`.slice(-3);
-          paddingWidth = `000${currentWidth}`.slice(-3);
-          paddingHeight = `000${currentHeight}`.slice(-3);
+          newX = tmpMap["point"]["value"][0] - tmpMap["width"]["value"];
 
-          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}[${fillzero(newX)}, ${fillzero(currentY)}], ${fillzero(currentWidth)}, ${fillzero(currentHeight)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -445,12 +461,9 @@ function App() {
           currentWidth = Math.abs(tmpMap["point"]["value"][0] + tmpMap["width"]["value"] - currentX);
           currentHeight = Math.abs(tmpMap["point"]["value"][1] - tmpMap["height"]["value"] - currentY);
 
-          paddingX = `000${currentX}`.slice(-3);
-          paddingY = `000${tmpMap["point"]["value"][1] - tmpMap["height"]["value"]}`.slice(-3);
-          paddingWidth = `000${currentWidth}`.slice(-3);
-          paddingHeight = `000${currentHeight}`.slice(-3);
+          newY = tmpMap["point"]["value"][1] - tmpMap["height"]["value"];
 
-          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}[${fillzero(currentX)}, ${fillzero(newY)}], ${fillzero(currentWidth)}, ${fillzero(currentHeight)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -461,12 +474,10 @@ function App() {
           currentWidth = Math.abs(tmpMap["point"]["value"][0] - tmpMap["width"]["value"] - currentX);
           currentHeight = Math.abs(tmpMap["point"]["value"][1] - tmpMap["height"]["value"] - currentY);
 
-          paddingX = `000${tmpMap["point"]["value"][0] - tmpMap["width"]["value"]}`.slice(-3);
-          paddingY = `000${tmpMap["point"]["value"][1] - tmpMap["height"]["value"]}`.slice(-3);
-          paddingWidth = `000${currentWidth}`.slice(-3);
-          paddingHeight = `000${currentHeight}`.slice(-3);
+          newX = tmpMap["point"]["value"][0] - tmpMap["width"]["value"];
+          newY = tmpMap["point"]["value"][1] - tmpMap["height"]["value"];
 
-          newProgram = `${currentProgram.slice(0, start)}[${paddingX}, ${paddingY}], ${paddingWidth}, ${paddingHeight}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}[${fillzero(newX)}, ${fillzero(newY)}], ${fillzero(currentWidth)}, ${fillzero(currentHeight)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -476,10 +487,8 @@ function App() {
 
           currentRx = Math.abs(tmpMap["point"]["value"][0] - tmpMap["rx"]["value"] - currentX);
           currentRy = tmpMap["ry"]["value"];
-          paddingRx = `000${currentRx}`.slice(-3);
-          paddingRy = `000${currentRy}`.slice(-3);
 
-          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}${fillzero(currentRx)}, ${fillzero(currentRy)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -489,10 +498,8 @@ function App() {
 
           currentRx = tmpMap["rx"]["value"];
           currentRy = Math.abs(tmpMap["point"]["value"][1] - tmpMap["ry"]["value"] - currentY);
-          paddingRx = `000${currentRx}`.slice(-3);
-          paddingRy = `000${currentRy}`.slice(-3);
 
-          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}${fillzero(currentRx)}, ${fillzero(currentRy)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -502,10 +509,8 @@ function App() {
 
           currentRx = Math.abs(tmpMap["point"]["value"][0] + tmpMap["rx"]["value"] - currentX);
           currentRy = tmpMap["ry"]["value"];
-          paddingRx = `000${currentRx}`.slice(-3);
-          paddingRy = `000${currentRy}`.slice(-3);
 
-          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}${fillzero(currentRx)}, ${fillzero(currentRy)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -515,10 +520,8 @@ function App() {
 
           currentRx = tmpMap["rx"]["value"];
           currentRy = Math.abs(tmpMap["point"]["value"][1] + tmpMap["ry"]["value"] - currentY);
-          paddingRx = `000${currentRx}`.slice(-3);
-          paddingRy = `000${currentRy}`.slice(-3);
 
-          newProgram = `${currentProgram.slice(0, start)}${paddingRx}, ${paddingRy}${currentProgram.slice(end)}`;
+          newProgram = `${currentProgram.slice(0, start)}${fillzero(currentRx)}, ${fillzero(currentRy)}${currentProgram.slice(end)}`;
           setProgram(newProgram);
           break;
 
@@ -542,6 +545,10 @@ function App() {
 
   const drawObject = (currentX, currentY) => {
     let currentProgram = program;
+    let leftUpX;
+    let leftUpY;
+    let width;
+    let height;
 
     setCounter(counter + 1);
 
@@ -549,19 +556,17 @@ function App() {
 
     switch (drawMode) {
       case 0:
-        currentProgram += `${optionalNewLine}line${counter} = line([${startX}, ${startY}], [${currentX}, ${currentY}], "${color}")`
+        currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}")`
         setProgram(currentProgram)
         break;
 
       case 1:
-        const leftUpX = Math.min(startX, currentX);
-        const leftUpY = Math.min(startY, currentY);
-        const width = Math.max(startX, currentX) - leftUpX;
-        const height = Math.max(startY, currentY) - leftUpY;
-        const paddingWidth = `000${width}`.slice(-3);
-        const paddingHeight = `000${height}`.slice(-3);
+        leftUpX = Math.min(startX, currentX);
+        leftUpY = Math.min(startY, currentY);
+        width = Math.max(startX, currentX) - leftUpX;
+        height = Math.max(startY, currentY) - leftUpY;
 
-        currentProgram += `${optionalNewLine}rect${counter} = rect([${leftUpX}, ${leftUpY}], ${paddingWidth}, ${paddingHeight}, "${color}")`
+        currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}")`
         setProgram(currentProgram)
         break;
 
@@ -570,10 +575,56 @@ function App() {
         const centerY = Math.floor((startY + currentY) / 2);
         const rx = Math.max(startX, currentX) - centerX;
         const ry = Math.max(startY, currentY) - centerY;
-        const paddingRx = `000${rx}`.slice(-3);
-        const paddingRy = `000${ry}`.slice(-3);
 
-        currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${centerX}, ${centerY}], ${paddingRx}, ${paddingRy}, "${color}");`
+        currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${fillzero(centerX)}, ${fillzero(centerY)}], ${fillzero(rx)}, ${fillzero(ry)}, "${color}");`
+        setProgram(currentProgram)
+        break;
+
+      case 3:
+        leftUpX = Math.min(startX, currentX);
+        leftUpY = Math.min(startY, currentY);
+        width = Math.max(startX, currentX) - leftUpX;
+        height = Math.max(startY, currentY) - leftUpY;
+
+        let index = 0;
+        for (const node of groupProgramNodes.body) {
+          if (node.type === "ExpressionStatement") {
+            const data = renderFigureData(node);
+
+            switch (data.type) {
+              case "line":
+                const newStartX = Math.floor(leftUpX + data.p1[0]*width/600);
+                const newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
+                const newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
+                const newEndY = Math.floor(leftUpY + data.p2[1]*height/600);
+                currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}")`
+                break;
+
+              case "rect":
+                const newLeftUpX = Math.floor(leftUpX + data.p[0]*width/600);
+                const newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
+                const newWidth = Math.floor(data.width*width/600);
+                const newHeight = Math.floor(data.height*height/600);
+                currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}")`
+                break;
+
+              case "ellipse":
+                const newCx = Math.floor(leftUpX + data.p[0]*width/600);
+                const newCy = Math.floor(leftUpY + data.p[1]*height/600);
+                const newRx = Math.floor(data.rx*width/600);
+                const newRy = Math.floor(data.ry*height/600);
+                currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}")`
+                break;
+              
+              default:
+        
+            }
+          }
+
+          index++;
+        }
+
+        setCounter(counter + index)
         setProgram(currentProgram)
         break;
 
@@ -659,7 +710,7 @@ function App() {
       const end = tmpMap["name"]["end"];
 
       const currentProgram = program;
-      const newProgram = `${currentProgram.slice(0, start)}${varName}${currentProgram.slice(end)}`
+      const newProgram = `${currentProgram.slice(0, start)}${varName.replace(" ", "")}${currentProgram.slice(end)}`
       setProgram(newProgram);
     }
   }
@@ -674,6 +725,9 @@ function App() {
           />
           <div className="output">
             <div>
+              <Modal open={modalState} onClose={handleModalClose}>
+                <Modal.Title>New group is set.</Modal.Title>
+              </Modal>
               { displayColorPicker ? <div style={ styles.popover }>
                 <div style={ styles.cover } onClick={ handleColorPickerClose }/>
                 <SketchPicker presetColors={defaultColors} color={ color } onChange={ handleColorPickerChange } />
@@ -688,6 +742,7 @@ function App() {
               >
                 {errorMessage ? <text x="20" y="20">{errorMessage}</text> : null}
                 {SVGComponent}
+                {optionalSVGComponent}
               </svg>
             </div>
             <div className="panel">
@@ -700,6 +755,7 @@ function App() {
                   <Radio value={0}>line</Radio>
                   <Radio value={1}>rectangle</Radio>
                   <Radio value={2}>ellipse</Radio>
+                  <Radio value={3}>group</Radio>
                 </Radio.Group>
               </Radio.Group>
               <Spacer y={1}/>
@@ -713,6 +769,8 @@ function App() {
                 <Radio value={1}>MOVE</Radio>
                 <Spacer x={1}/>
                 <Radio value={2}>DELETE</Radio>
+                <Spacer x={1}/>
+                <Button size="mini" onClick={handleGroupButtonClick}>Make Group</Button>
               </Radio.Group>
               <Spacer y={1}/>
               <Radio.Group value={mode} onChange={handleMode} useRow>

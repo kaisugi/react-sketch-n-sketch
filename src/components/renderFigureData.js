@@ -1,9 +1,9 @@
 export default (node) => {
 
+  //console.log(node)
+
   if (node.type === "ExpressionStatement") {
     const exp = node.expression;
-
-    //console.log(exp)
 
     switch (exp.right.callee.name) {
       case "line":
