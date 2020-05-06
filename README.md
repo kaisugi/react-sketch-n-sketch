@@ -30,7 +30,7 @@ Make Group と書かれているボタンをクリックすると, 現在画面�
 
 ## モードについて
 
-react-sketch-n-sketch では **DRAW, MOVE, DELETE, CHANGE COLOR, CHANGE VARIABLE NAME** の 5 つのモードがあります。
+react-sketch-n-sketch では **DRAW, MOVE, DELETE, CHANGE COLOR, CHANGE VARIABLE NAME** の 5 つのモードがあります.
 
 #### DRAW
 
