@@ -8,7 +8,16 @@ import Editor from './components/editor';
 import renderFigureData from './components/renderFigureData';
 
 
-const defaultProgram = "";
+const defaultProgram = `leftBlueEll = ellipse([268, 286], 218, 261, "#187fc4")
+leftWhiteEll = ellipse([269, 288], 162, 264, "#ffffff")
+leftRect = rect([048, 016], 207, 547, "#ffffff")
+rightBlueEll = ellipse([264, 277], 115, 166, "#187fc4")
+rightWhiteEll = ellipse([266, 277], 064, 175, "#ffffff")
+rightRect = rect([256, 113], 130, 329, "#ffffff")
+centerYellowEll1 = ellipse([286, 205], 049, 094, "#fabe00");
+centerYellowEll2 = ellipse([307, 359], 052, 086, "#fabe00");
+centerWhiteEll1 = ellipse([314, 182], 053, 090, "#ffffff");
+centerWhiteEll2 = ellipse([269, 359], 049, 073, "#ffffff");`;
 
 
 const defaultColors = 
@@ -398,7 +407,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos.length > 0) {
+    if (pointsToPos && pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -550,17 +559,21 @@ function App() {
     let width;
     let height;
 
-    setCounter(counter + 1);
+    let optionalNewLine;
 
-    const optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+    setCounter(counter + 1);
 
     switch (drawMode) {
       case 0:
+        optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
         currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}")`
         setProgram(currentProgram)
         break;
 
       case 1:
+        optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
         leftUpX = Math.min(startX, currentX);
         leftUpY = Math.min(startY, currentY);
         width = Math.max(startX, currentX) - leftUpX;
@@ -571,6 +584,8 @@ function App() {
         break;
 
       case 2:
+        optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
         const centerX = Math.floor((startX + currentX) / 2);
         const centerY = Math.floor((startY + currentY) / 2);
         const rx = Math.max(startX, currentX) - centerX;
@@ -593,6 +608,8 @@ function App() {
 
             switch (data.type) {
               case "line":
+                optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
                 const newStartX = Math.floor(leftUpX + data.p1[0]*width/600);
                 const newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
                 const newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
@@ -601,6 +618,8 @@ function App() {
                 break;
 
               case "rect":
+                optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
                 const newLeftUpX = Math.floor(leftUpX + data.p[0]*width/600);
                 const newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
                 const newWidth = Math.floor(data.width*width/600);
@@ -609,6 +628,8 @@ function App() {
                 break;
 
               case "ellipse":
+                optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+
                 const newCx = Math.floor(leftUpX + data.p[0]*width/600);
                 const newCy = Math.floor(leftUpY + data.p[1]*height/600);
                 const newRx = Math.floor(data.rx*width/600);
@@ -640,7 +661,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos.length > 0) {
+    if (pointsToPos && pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -668,7 +689,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos.length > 0) {
+    if (pointsToPos && pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -694,7 +715,7 @@ function App() {
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos.length > 0) {
+    if (pointsToPos && pointsToPos.length > 0) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
@@ -783,7 +804,7 @@ function App() {
         </div>
       </div>
     ) : (
-      <div className="App"><br/>Please let window width be over 1220px</div>
+      <div className="App"><br/>Please let window width be over 1220px<br/>画面の横幅を 1220px より大きくしてリロードしてください。</div>
     )
   );
 }
