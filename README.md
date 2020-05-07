@@ -15,8 +15,8 @@ react-sketch-n-sketch では **直線, 長方形, 楕円** の 3 種類の図形
 それぞれ, 以下のような JavaScript 風のシンタックスの関数を用いて描画されます.
 
 ```javascript
-line1 = line([63, 335], [177, 536], "#c13030")
-rect2 = rect([48, 16], 207, 547, "#ffffff")
+line1 = line([63, 335], [177, 536], "#c13030");
+rect2 = rect([48, 16], 207, 547, "#ffffff");
 ellipse3 = ellipse([314, 182], 53, 90, "#fabe00");
 ```
 
