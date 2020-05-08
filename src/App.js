@@ -767,7 +767,7 @@ function App() {
             <div className="panel">
               <Checkbox checked={isWidgetsOn} onChange={handleWidgetCheckBoxClick}>Show Widgets</Checkbox>&nbsp;&nbsp;&nbsp;
               <a href="https://github.com/7ma7X/react-sketch-n-sketch/blob/master/README.md" target="_blank" rel="noopener noreferrer">README</a>
-              <Spacer y={1}/>
+              <Spacer y={0.5}/>
               <Radio.Group value={mode} onChange={handleMode} useRow>
                 <Radio value={0}>DRAW</Radio>
                 <Radio.Group style={{opacity: (mode===0) ? 1: 0.2}}value={drawMode} onChange={handleDrawMode} useRow>
@@ -778,7 +778,7 @@ function App() {
                   <Radio value={3}>group</Radio>
                 </Radio.Group>
               </Radio.Group>
-              <Spacer y={1}/>
+              <Spacer y={0.5}/>
               <Radio.Group value={mode} onChange={handleMode} useRow>
                 <Radio value={3}>CHANGE COLOR</Radio>
                 <Spacer x={1}/>
@@ -792,7 +792,7 @@ function App() {
                 <Spacer x={1}/>
                 <Button size="mini" onClick={handleGroupButtonClick}>Make Group</Button>
               </Radio.Group>
-              <Spacer y={1}/>
+              <Spacer y={0.5}/>
               <Radio.Group value={mode} onChange={handleMode} useRow>
                 <Radio value={4}>CHANGE VARIABLE NAME</Radio>
                 <Spacer x={1}/>
