@@ -8,12 +8,12 @@ import Editor from './components/editor';
 import renderFigureData from './components/renderFigureData';
 
 
-const defaultProgram = `leftBlueEll = ellipse([268, 286], 218, 261, "#187fc4")
-leftWhiteEll = ellipse([269, 288], 162, 264, "#ffffff")
-leftRect = rect([048, 016], 207, 547, "#ffffff")
-rightBlueEll = ellipse([264, 277], 115, 166, "#187fc4")
-rightWhiteEll = ellipse([266, 277], 064, 175, "#ffffff")
-rightRect = rect([256, 113], 130, 329, "#ffffff")
+const defaultProgram = `leftBlueEll = ellipse([268, 286], 218, 261, "#187fc4");
+leftWhiteEll = ellipse([269, 288], 162, 264, "#ffffff");
+leftRect = rect([048, 016], 207, 547, "#ffffff");
+rightBlueEll = ellipse([264, 277], 115, 166, "#187fc4");
+rightWhiteEll = ellipse([266, 277], 064, 175, "#ffffff");
+rightRect = rect([256, 113], 130, 329, "#ffffff");
 centerYellowEll1 = ellipse([286, 205], 049, 094, "#fabe00");
 centerYellowEll2 = ellipse([307, 359], 052, 086, "#fabe00");
 centerWhiteEll1 = ellipse([314, 182], 053, 090, "#ffffff");
@@ -567,7 +567,7 @@ function App() {
       case 0:
         optionalNewLine = (currentProgram === "" ) ? "" : "\n";
 
-        currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}")`
+        currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}");`
         setProgram(currentProgram)
         break;
 
@@ -579,7 +579,7 @@ function App() {
         width = Math.max(startX, currentX) - leftUpX;
         height = Math.max(startY, currentY) - leftUpY;
 
-        currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}")`
+        currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}");`
         setProgram(currentProgram)
         break;
 
@@ -614,7 +614,7 @@ function App() {
                 const newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
                 const newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
                 const newEndY = Math.floor(leftUpY + data.p2[1]*height/600);
-                currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}")`
+                currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}");`
                 break;
 
               case "rect":
@@ -624,7 +624,7 @@ function App() {
                 const newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
                 const newWidth = Math.floor(data.width*width/600);
                 const newHeight = Math.floor(data.height*height/600);
-                currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}")`
+                currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}");`
                 break;
 
               case "ellipse":
@@ -634,7 +634,7 @@ function App() {
                 const newCy = Math.floor(leftUpY + data.p[1]*height/600);
                 const newRx = Math.floor(data.rx*width/600);
                 const newRy = Math.floor(data.ry*height/600);
-                currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}")`
+                currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}");`
                 break;
               
               default:
