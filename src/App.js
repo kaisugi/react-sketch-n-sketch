@@ -735,8 +735,13 @@ function App() {
   }
 
   return (
-    (window.innerWidth > 1220) ? (
-      <div className="App">
+    (window.innerWidth <= 1220) ? (
+      <div className="App"><br/>Window width must be over 1220px<br/>画面の横幅を 1220px より大きくしてリロードしてください。</div>
+    ) : (
+      (window.innerHeight <= 800) ? (
+        <div className="App"><br/>Window height must be over 800px<br/>画面の縦幅を 800px より大きくしてリロードしてください。</div>
+      ) : (
+        <div className="App">
         <div className="wrapper">
           <Editor 
             program={deleteZeroPadding(program)}
@@ -803,8 +808,7 @@ function App() {
           <br/>
         </div>
       </div>
-    ) : (
-      <div className="App"><br/>Please let window width be over 1220px<br/>画面の横幅を 1220px より大きくしてリロードしてください。</div>
+      )
     )
   );
 }
