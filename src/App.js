@@ -738,8 +738,8 @@ function App() {
     (window.innerWidth <= 1220) ? (
       <div className="App"><br/>Window width must be over 1220px<br/>画面の横幅を 1220px より大きくしてリロードしてください。</div>
     ) : (
-      (window.innerHeight <= 800) ? (
-        <div className="App"><br/>Window height must be over 800px<br/>画面の縦幅を 800px より大きくしてリロードしてください。</div>
+      (window.innerHeight <= 780) ? (
+        <div className="App"><br/>Window height must be over 780px<br/>画面の縦幅を 780px より大きくしてリロードしてください。</div>
       ) : (
         <div className="App">
         <div className="wrapper">
