@@ -311,8 +311,8 @@ function App() {
   const handleMouseDown = (e) => {
     setIsMouseDown(true);
 
-    const currentX = e.clientX - 605;
-    const currentY = e.clientY - 5;
+    const currentX = e.clientX + window.pageXOffset - 605;
+    const currentY = e.clientY + window.pageYOffset - 5;
 
     if (mode === 0) {
       setStartX(currentX);
@@ -321,8 +321,8 @@ function App() {
   }
 
   const handleMouseMove = (e) => {
-    const currentX = e.clientX - 605;
-    const currentY = e.clientY - 5;
+    const currentX = e.clientX + window.pageXOffset - 605;
+    const currentY = e.clientY + window.pageYOffset - 5;
 
     if (isMouseDown) {
       if (mode === 1) {
@@ -348,8 +348,8 @@ function App() {
   const handleMouseUp = (e) => {
     setIsMouseDown(false);
 
-    const currentX = e.clientX - 605;
-    const currentY = e.clientY - 5;
+    const currentX = e.clientX + window.pageXOffset - 605;
+    const currentY = e.clientY + window.pageYOffset - 5;
 
     if (mode === 2) {
       deleteObject(currentX, currentY);
@@ -735,13 +735,8 @@ function App() {
   }
 
   return (
-    (window.innerWidth <= 1220) ? (
-      <div className="App"><br/>Window width must be over 1220px<br/>画面の横幅を 1220px より大きくしてリロードしてください。</div>
-    ) : (
-      (window.innerHeight <= 750) ? (
-        <div className="App"><br/>Window height must be over 750px<br/>画面の縦幅を 750px より大きくしてリロードしてください。</div>
-      ) : (
-        <div className="App">
+    (window.innerWidth > 1220) ? (
+      <div className="App">
         <div className="wrapper">
           <Editor 
             program={deleteZeroPadding(program)}
@@ -808,7 +803,8 @@ function App() {
           <br/>
         </div>
       </div>
-      )
+    ) : (
+      <div className="App"><br/>Please let window width be over 1220px<br/>画面の横幅を 1220px より大きくしてリロードしてください。</div>
     )
   );
 }
