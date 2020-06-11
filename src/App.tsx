@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { ReactElement, useState, useEffect } from 'react';
 import './App.css';
 import { Parser } from 'acorn';
 import { Button, Checkbox, Input, Modal, Radio, Spacer } from '@zeit-ui/react'
@@ -8,16 +8,9 @@ import Editor from './components/editor';
 import renderFigureData from './components/renderFigureData';
 
 
-const defaultProgram = `leftBlueEll = ellipse([268, 286], 218, 261, "#187fc4");
-leftWhiteEll = ellipse([269, 288], 162, 264, "#ffffff");
-leftRect = rect([048, 016], 207, 547, "#ffffff");
-rightBlueEll = ellipse([264, 277], 115, 166, "#187fc4");
-rightWhiteEll = ellipse([266, 277], 064, 175, "#ffffff");
-rightRect = rect([256, 113], 130, 329, "#ffffff");
-centerYellowEll1 = ellipse([286, 205], 049, 094, "#fabe00");
-centerYellowEll2 = ellipse([307, 359], 052, 086, "#fabe00");
-centerWhiteEll1 = ellipse([314, 182], 053, 090, "#ffffff");
-centerWhiteEll2 = ellipse([269, 359], 049, 073, "#ffffff");`;
+const defaultProgram = `lineTop = line([62, 45], [549, 176], "#c13030");
+rectLeft = rect([50, 236], 158, 328, "#187fc4");
+ellipseRight = ellipse([428, 359], 144, 153, "#fabe00");`;
 
 
 const defaultColors = 
@@ -27,17 +20,30 @@ const defaultColors =
   '#187FC4', '#FABE00']
 
 
-const fillzero = str => {
-  return `000${str}`.slice(-3);
+const fillzero = (num: number) => {
+  return `000${num}`.slice(-3);
+}
+
+
+type PointsToPosType = {
+  type: number, 
+  name: { start: number, end: number }, 
+  object: { start: number, end: number },
+  color: { value: string, start: number, end: number },
+  point: { value: number[], start: number, end: number },
+  width?: { value: number, start: number, end: number },
+  height?: { value: number, start: number, end: number },
+  rx?: { value: number, start: number, end: number },
+  ry?: { value: number, start: number, end: number }
 }
 
 
 function App() {
   const [program, setProgram] = useState(defaultProgram);
-  const [groupProgramNodes, setGroupProgamNodes] = useState(null);
+  const [groupProgramNodes, setGroupProgamNodes] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [SVGComponent, setSVGComponent] = useState(null);
-  const [optionalSVGComponent, setOptionalSVGComponent] = useState(null);
+  const [SVGComponent, setSVGComponent] = useState<ReactElement[] | null>(null);
+  const [optionalSVGComponent, setOptionalSVGComponent] = useState<any>(null);
   const [counter, setCounter] = useState(1);
 
   const [mode, setMode] = useState(0);
@@ -57,10 +63,10 @@ function App() {
    * 7: 楕円の左
    * 8: 楕円の下
    */
-  const [pointsToPos, setPointsToPos] = useState(null); 
+  const [pointsToPos, setPointsToPos] = useState<PointsToPosType[] | null>(null); 
 
-  const [startX, setStartX] = useState(null);
-  const [startY, setStartY] = useState(null);
+  const [startX, setStartX] = useState<number | null>(null);
+  const [startY, setStartY] = useState<number | null>(null);
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [isWidgetsOn, setIsWidgetsOn] = useState(true); 
@@ -102,16 +108,16 @@ function App() {
 
   useEffect(() => {
     try {
-      const newSVGComponent = [];
-      const newPointsToPos = [];
+      const newSVGComponent: ReactElement[] = [];
+      const newPointsToPos: PointsToPosType[] = [];
 
 
-      const programNodes = Parser.parse(program);
+      const programNodes: any = Parser.parse(program);
 
       for (const node of programNodes.body) {
         const data = renderFigureData(node);
 
-        switch (data.type) {
+        switch (data?.type) {
           case "line":
             const leftPoint = (data.p1[0] < data.p2[0]) ? data.p1 : data.p2;
   
@@ -286,6 +292,7 @@ function App() {
             });
             newPointsToPos.push({
               type: 0, 
+              name: { start: data.nameStart, end: data.nameEnd },
               object: { start: data.start, end: data.end },
               color: { value: data.color, start: data.colorStart, end: data.colorEnd },
               point: { value: [data.p[0], data.p[1]], start: data.pStart, end: data.pEnd },
@@ -327,12 +334,12 @@ function App() {
     if (isMouseDown) {
       if (mode === 1) {
         movePoints(currentX, currentY);
-      } else if (mode === 0) {
+      } else if (mode === 0 && startX && startY) {
         setOptionalSVGComponent(
           <rect
             x={Math.min(startX, currentX)} 
             y={Math.min(startY, currentY)} 
-            width={Math.max(startX, currentX) - Math.min(startX, currentX) - 5} 
+            width={Math.max(startX, currentX) - Math.min(startX, currentX)} 
             height={Math.max(startY, currentY) - Math.min(startY, currentY)} 
             stroke="black"
             strokeDasharray="4 4"
@@ -372,11 +379,11 @@ function App() {
   }
 
   const handleMode = val => {
-    setMode(val)
+    setMode(Number(val))
   }
 
   const handleDrawMode = val => {
-    setDrawMode(val);
+    setDrawMode(Number(val));
   }
 
   const handleColorPickerClick = () => {
@@ -563,95 +570,98 @@ function App() {
 
     setCounter(counter + 1);
 
-    switch (drawMode) {
-      case 0:
-        optionalNewLine = (currentProgram === "" ) ? "" : "\n";
-
-        currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}");`
-        setProgram(currentProgram)
-        break;
-
-      case 1:
-        optionalNewLine = (currentProgram === "" ) ? "" : "\n";
-
-        leftUpX = Math.min(startX, currentX);
-        leftUpY = Math.min(startY, currentY);
-        width = Math.max(startX, currentX) - leftUpX;
-        height = Math.max(startY, currentY) - leftUpY;
-
-        currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}");`
-        setProgram(currentProgram)
-        break;
-
-      case 2:
-        optionalNewLine = (currentProgram === "" ) ? "" : "\n";
-
-        const centerX = Math.floor((startX + currentX) / 2);
-        const centerY = Math.floor((startY + currentY) / 2);
-        const rx = Math.max(startX, currentX) - centerX;
-        const ry = Math.max(startY, currentY) - centerY;
-
-        currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${fillzero(centerX)}, ${fillzero(centerY)}], ${fillzero(rx)}, ${fillzero(ry)}, "${color}");`
-        setProgram(currentProgram)
-        break;
-
-      case 3:
-        leftUpX = Math.min(startX, currentX);
-        leftUpY = Math.min(startY, currentY);
-        width = Math.max(startX, currentX) - leftUpX;
-        height = Math.max(startY, currentY) - leftUpY;
-
-        let index = 0;
-        for (const node of groupProgramNodes.body) {
-          if (node.type === "ExpressionStatement") {
-            const data = renderFigureData(node);
-
-            switch (data.type) {
-              case "line":
-                optionalNewLine = (currentProgram === "" ) ? "" : "\n";
-
-                const newStartX = Math.floor(leftUpX + data.p1[0]*width/600);
-                const newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
-                const newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
-                const newEndY = Math.floor(leftUpY + data.p2[1]*height/600);
-                currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}");`
-                break;
-
-              case "rect":
-                optionalNewLine = (currentProgram === "" ) ? "" : "\n";
-
-                const newLeftUpX = Math.floor(leftUpX + data.p[0]*width/600);
-                const newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
-                const newWidth = Math.floor(data.width*width/600);
-                const newHeight = Math.floor(data.height*height/600);
-                currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}");`
-                break;
-
-              case "ellipse":
-                optionalNewLine = (currentProgram === "" ) ? "" : "\n";
-
-                const newCx = Math.floor(leftUpX + data.p[0]*width/600);
-                const newCy = Math.floor(leftUpY + data.p[1]*height/600);
-                const newRx = Math.floor(data.rx*width/600);
-                const newRy = Math.floor(data.ry*height/600);
-                currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}");`
-                break;
-              
-              default:
-        
+    if (startX && startY) {
+      switch (drawMode) {
+        case 0:
+          optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+  
+          currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}");`
+          setProgram(currentProgram)
+          break;
+  
+        case 1:
+          optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+  
+          leftUpX = Math.min(startX, currentX);
+          leftUpY = Math.min(startY, currentY);
+          width = Math.max(startX, currentX) - leftUpX;
+          height = Math.max(startY, currentY) - leftUpY;
+  
+          currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}");`
+          setProgram(currentProgram)
+          break;
+  
+        case 2:
+          optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+  
+          const centerX = Math.floor((startX + currentX) / 2);
+          const centerY = Math.floor((startY + currentY) / 2);
+          const rx = Math.max(startX, currentX) - centerX;
+          const ry = Math.max(startY, currentY) - centerY;
+  
+          currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${fillzero(centerX)}, ${fillzero(centerY)}], ${fillzero(rx)}, ${fillzero(ry)}, "${color}");`
+          setProgram(currentProgram)
+          break;
+  
+        case 3:
+          leftUpX = Math.min(startX, currentX);
+          leftUpY = Math.min(startY, currentY);
+          width = Math.max(startX, currentX) - leftUpX;
+          height = Math.max(startY, currentY) - leftUpY;
+  
+          let index = 0;
+          for (const node of groupProgramNodes.body) {
+            if (node.type === "ExpressionStatement") {
+              const data = renderFigureData(node);
+  
+              switch (data?.type) {
+                case "line":
+                  optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+  
+                  const newStartX = Math.floor(leftUpX + data.p1[0]*width/600);
+                  const newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
+                  const newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
+                  const newEndY = Math.floor(leftUpY + data.p2[1]*height/600);
+                  currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}");`
+                  break;
+  
+                case "rect":
+                  optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+  
+                  const newLeftUpX = Math.floor(leftUpX + data.p[0]*width/600);
+                  const newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
+                  const newWidth = Math.floor(data.width*width/600);
+                  const newHeight = Math.floor(data.height*height/600);
+                  currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}");`
+                  break;
+  
+                case "ellipse":
+                  optionalNewLine = (currentProgram === "" ) ? "" : "\n";
+  
+                  const newCx = Math.floor(leftUpX + data.p[0]*width/600);
+                  const newCy = Math.floor(leftUpY + data.p[1]*height/600);
+                  const newRx = Math.floor(data.rx*width/600);
+                  const newRy = Math.floor(data.ry*height/600);
+                  currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}");`
+                  break;
+                
+                default:
+          
+              }
             }
+  
+            index++;
           }
-
-          index++;
-        }
-
-        setCounter(counter + index)
-        setProgram(currentProgram)
-        break;
-
-      default:
-
+  
+          setCounter(counter + index)
+          setProgram(currentProgram)
+          break;
+  
+        default:
+  
+      }
     }
+
   }
 
   const deleteObject = (currentX, currentY) => {  
@@ -768,33 +778,33 @@ function App() {
               <Checkbox checked={isWidgetsOn} onChange={handleWidgetCheckBoxClick}>Show Widgets</Checkbox>&nbsp;&nbsp;&nbsp;
               <a href="https://github.com/7ma7X/react-sketch-n-sketch/blob/master/README.md" target="_blank" rel="noopener noreferrer">README</a>
               <Spacer y={0.5}/>
-              <Radio.Group value={mode} onChange={handleMode} useRow>
-                <Radio value={0}>DRAW</Radio>
-                <Radio.Group style={{opacity: (mode===0) ? 1: 0.2}}value={drawMode} onChange={handleDrawMode} useRow>
+              <Radio.Group value={`${mode}`} onChange={handleMode} useRow>
+                <Radio value={`${0}`}>DRAW</Radio>
+                <Radio.Group style={{opacity: (mode===0) ? 1: 0.2}} value={`${drawMode}`} onChange={handleDrawMode} useRow>
                   <Spacer x={2}/>
-                  <Radio value={0}>line</Radio>
-                  <Radio value={1}>rectangle</Radio>
-                  <Radio value={2}>ellipse</Radio>
-                  <Radio value={3}>group</Radio>
+                  <Radio value={`${0}`}>line</Radio>
+                  <Radio value={`${1}`}>rectangle</Radio>
+                  <Radio value={`${2}`}>ellipse</Radio>
+                  <Radio value={`${3}`}>group</Radio>
                 </Radio.Group>
               </Radio.Group>
               <Spacer y={0.5}/>
-              <Radio.Group value={mode} onChange={handleMode} useRow>
-                <Radio value={3}>CHANGE COLOR</Radio>
+              <Radio.Group value={`${mode}`} onChange={handleMode} useRow>
+                <Radio value={`${3}`}>CHANGE COLOR</Radio>
                 <Spacer x={1}/>
                 <div style={ styles.swatch } onClick={ handleColorPickerClick }>
                   <div style={ styles.color } />
                 </div>
                 <Spacer x={1}/>
-                <Radio value={1}>MOVE</Radio>
+                <Radio value={`${1}`}>MOVE</Radio>
                 <Spacer x={1}/>
-                <Radio value={2}>DELETE</Radio>
+                <Radio value={`${2}`}>DELETE</Radio>
                 <Spacer x={1}/>
                 <Button size="mini" onClick={handleGroupButtonClick}>Make Group</Button>
               </Radio.Group>
               <Spacer y={0.5}/>
-              <Radio.Group value={mode} onChange={handleMode} useRow>
-                <Radio value={4}>CHANGE VARIABLE NAME</Radio>
+              <Radio.Group value={`${mode}`} onChange={handleMode} useRow>
+                <Radio value={`${4}`}>CHANGE VARIABLE NAME</Radio>
                 <Spacer x={1}/>
                 <Input label="new name" initialValue="" onChange={handleInputChange} />
               </Radio.Group>
