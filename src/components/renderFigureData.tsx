@@ -1,4 +1,65 @@
-export default (node) => {
+type LineType = {
+  type: "line",
+  start: number,
+  end: number,
+  name: string,
+  nameStart: number,
+  nameEnd: number,
+  p1: number[],
+  p1Start: number,
+  p1End: number,
+  p2: number[],
+  p2Start: number,
+  p2End: number,
+  color: string,
+  colorStart: number,
+  colorEnd: number
+}
+
+type RectType = {
+  type: "rect",
+  start: number,
+  end: number
+  name: string,
+  nameStart: number,
+  nameEnd: number,
+  p: number[],
+  pStart: number,
+  pEnd: number,
+  width: number,
+  widthStart: number,
+  widthEnd: number,
+  height: number,
+  heightStart: number
+  heightEnd: number,
+  color: string,
+  colorStart: number,
+  colorEnd: number
+}
+
+type EllipseType = {
+  type: "ellipse",
+  start: number,
+  end: number,
+  name: string,
+  nameStart: number,
+  nameEnd: number,
+  p: number[],
+  pStart: number,
+  pEnd: number,
+  rx: number,
+  rxStart: number,
+  rxEnd: number,
+  ry: number,
+  ryStart: number,
+  ryEnd: number
+  color: string,
+  colorStart: number,
+  colorEnd: number
+}
+
+
+export default (node): LineType | RectType | EllipseType | undefined => {
 
   //console.log(node)
 
