@@ -1,11 +1,10 @@
-import React, { ReactElement, useState, useEffect } from 'react';
-import './App.css';
-import { Parser } from 'acorn';
-import { Button, Checkbox, Input, Modal, Radio, Spacer } from '@zeit-ui/react'
-import { SketchPicker } from 'react-color';
-import reactCSS from 'reactcss'
-import Editor from './components/editor';
-import renderFigureData from './components/renderFigureData';
+import React, { useState, useEffect } from "react";
+import { Parser } from "acorn";
+import { Button, Checkbox, Input, Modal, Radio, Spacer } from "@zeit-ui/react";
+import { SketchPicker } from "react-color";
+import Editor from "./components/editor";
+import renderFigureData from "./components/renderFigureData";
+import reactCSS from "reactcss";
 
 
 const defaultProgram = `lineTop = line([62, 45], [549, 176], "#c13030");
@@ -14,15 +13,15 @@ ellipseRight = ellipse([428, 359], 144, 153, "#fabe00");`;
 
 
 const defaultColors = 
-  ['#D0021B', '#F5A623', '#F8E71C', '#8B572A', '#7ED321', 
-  '#417505', '#BD10E0', '#9013FE', '#4A90E2', '#50E3C2', 
-  '#B8E986', '#000000', '#4A4A4A', '#9B9B9B', '#FFFFFF',
-  '#187FC4', '#FABE00']
+  ["#D0021B", "#F5A623", "#F8E71C", "#8B572A", "#7ED321", 
+    "#417505", "#BD10E0", "#9013FE", "#4A90E2", "#50E3C2", 
+    "#B8E986", "#000000", "#4A4A4A", "#9B9B9B", "#FFFFFF",
+    "#187FC4", "#FABE00"];
 
 
 const fillzero = (num: number) => {
   return `000${num}`.slice(-3);
-}
+};
 
 
 type PointsToPosType = {
@@ -76,31 +75,31 @@ function App() {
   const [varName, setVarName] = useState("");
 
   const styles = reactCSS({
-    'default': {
+    "default": {
       color: {
-        width: '36px',
-        height: '14px',
-        borderRadius: '2px',
+        width: "36px",
+        height: "14px",
+        borderRadius: "2px",
         background: color,
       },
       swatch: {
-        padding: '5px',
-        background: '#fff',
-        borderRadius: '1px',
-        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-        display: 'inline-block',
-        cursor: 'pointer',
+        padding: "5px",
+        background: "#fff",
+        borderRadius: "1px",
+        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+        display: "inline-block",
+        cursor: "pointer",
       },
       popover: {
-        position: 'absolute',
-        zIndex: '4',
+        position: "absolute",
+        zIndex: "4",
       },
       cover: {
-        position: 'fixed',
-        top: 'px',
-        right: '0px',
-        bottom: '0px',
-        left: '0px',
+        position: "fixed",
+        top: "px",
+        right: "0px",
+        bottom: "0px",
+        left: "0px",
       },
     },
   });
@@ -117,9 +116,10 @@ function App() {
       for (const node of programNodes.body) {
         const data = renderFigureData(node);
 
+        let leftPoint;
         switch (data?.type) {
           case "line":
-            const leftPoint = (data.p1[0] < data.p2[0]) ? data.p1 : data.p2;
+            leftPoint = (data.p1[0] < data.p2[0]) ? data.p1 : data.p2;
   
             newSVGComponent.push(
               <>
@@ -143,7 +143,7 @@ function App() {
                   </>
                 ) : null}
               </>
-            )
+            );
 
             newPointsToPos.push({
               type: 0, 
@@ -186,7 +186,7 @@ function App() {
                   </>
                 ) : null}
               </>
-            )
+            );
 
             newPointsToPos.push({
               type: 1, 
@@ -252,7 +252,7 @@ function App() {
                   </>
                 ) : null}
               </>
-            )
+            );
 
             newPointsToPos.push({
               type: 5, 
@@ -325,7 +325,7 @@ function App() {
       setStartX(currentX);
       setStartY(currentY);
     }
-  }
+  };
 
   const handleMouseMove = (e) => {
     const currentX = e.clientX + window.pageXOffset - 605;
@@ -347,10 +347,10 @@ function App() {
             strokeWidth="2" 
             strokeLinecap="round"
           />
-        )
+        );
       }
     }
-  }
+  };
 
   const handleMouseUp = (e) => {
     setIsMouseDown(false);
@@ -368,44 +368,44 @@ function App() {
     } else if (mode === 4) {
       changeVarName(currentX, currentY);
     }
-  }
+  };
 
   const handleModalClose = () => {
     setModalState(false);
-  }
+  };
 
-  const handleWidgetCheckBoxClick = (e) => {
+  const handleWidgetCheckBoxClick = () => {
     setIsWidgetsOn(!isWidgetsOn);
-  }
+  };
 
   const handleMode = val => {
-    setMode(Number(val))
-  }
+    setMode(Number(val));
+  };
 
   const handleDrawMode = val => {
     setDrawMode(Number(val));
-  }
+  };
 
   const handleColorPickerClick = () => {
     setDisplayColorPicker(!displayColorPicker);
-  }
+  };
 
   const handleColorPickerClose = () => {
     setDisplayColorPicker(false);
   };
 
   const handleColorPickerChange = (color) => {
-    setColor(color.hex)
+    setColor(color.hex);
   };
 
   const handleInputChange = (e) => {
     setVarName(e.target.value);
-  }
+  };
 
   const handleGroupButtonClick = () => {
     setModalState(true);
-    setGroupProgamNodes(Parser.parse(program))
-  }
+    setGroupProgamNodes(Parser.parse(program));
+  };
 
   const movePoints = (currentX, currentY) => {    
     if (currentX <= 0 || currentX >= 600) return;
@@ -544,20 +544,20 @@ function App() {
         default:
       }
     }
-  }
+  };
 
   // ゼロ埋めを見た目消す
   const deleteZeroPadding = (program) => {
     return program.replace(/[^\da-f](\d{3})[^\da-f]/gi, (match) => {
-      if (match[1] === '0' && match[2] === '0') {
-        return match[0] + match[3] + match[4]
-      } else if (match[1] === '0') {
-        return match[0] + match[2] + match[3] + match[4]
+      if (match[1] === "0" && match[2] === "0") {
+        return match[0] + match[3] + match[4];
+      } else if (match[1] === "0") {
+        return match[0] + match[2] + match[3] + match[4];
       } else {
         return match;
       }
-    })
-  }
+    });
+  };
 
   const drawObject = (currentX, currentY) => {
     let currentProgram = program;
@@ -571,12 +571,30 @@ function App() {
     setCounter(counter + 1);
 
     if (startX && startY) {
+      let centerX;
+      let centerY;
+      let rx;
+      let ry;
+      let index;
+      let newStartX;
+      let newStartY;
+      let newEndX;
+      let newEndY;
+      let newLeftUpX;
+      let newLeftUpY;
+      let newWidth;
+      let newHeight;
+      let newCx;
+      let newCy;
+      let newRx;
+      let newRy;
+
       switch (drawMode) {
         case 0:
           optionalNewLine = (currentProgram === "" ) ? "" : "\n";
   
-          currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}");`
-          setProgram(currentProgram)
+          currentProgram += `${optionalNewLine}line${counter} = line([${fillzero(startX)}, ${fillzero(startY)}], [${fillzero(currentX)}, ${fillzero(currentY)}], "${color}");`;
+          setProgram(currentProgram);
           break;
   
         case 1:
@@ -587,20 +605,20 @@ function App() {
           width = Math.max(startX, currentX) - leftUpX;
           height = Math.max(startY, currentY) - leftUpY;
   
-          currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}");`
-          setProgram(currentProgram)
+          currentProgram += `${optionalNewLine}rect${counter} = rect([${fillzero(leftUpX)}, ${fillzero(leftUpY)}], ${fillzero(width)}, ${fillzero(height)}, "${color}");`;
+          setProgram(currentProgram);
           break;
   
         case 2:
           optionalNewLine = (currentProgram === "" ) ? "" : "\n";
   
-          const centerX = Math.floor((startX + currentX) / 2);
-          const centerY = Math.floor((startY + currentY) / 2);
-          const rx = Math.max(startX, currentX) - centerX;
-          const ry = Math.max(startY, currentY) - centerY;
+          centerX = Math.floor((startX + currentX) / 2);
+          centerY = Math.floor((startY + currentY) / 2);
+          rx = Math.max(startX, currentX) - centerX;
+          ry = Math.max(startY, currentY) - centerY;
   
-          currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${fillzero(centerX)}, ${fillzero(centerY)}], ${fillzero(rx)}, ${fillzero(ry)}, "${color}");`
-          setProgram(currentProgram)
+          currentProgram += `${optionalNewLine}ellipse${counter} = ellipse([${fillzero(centerX)}, ${fillzero(centerY)}], ${fillzero(rx)}, ${fillzero(ry)}, "${color}");`;
+          setProgram(currentProgram);
           break;
   
         case 3:
@@ -609,7 +627,7 @@ function App() {
           width = Math.max(startX, currentX) - leftUpX;
           height = Math.max(startY, currentY) - leftUpY;
   
-          let index = 0;
+          index = 0;
           for (const node of groupProgramNodes.body) {
             if (node.type === "ExpressionStatement") {
               const data = renderFigureData(node);
@@ -618,31 +636,31 @@ function App() {
                 case "line":
                   optionalNewLine = (currentProgram === "" ) ? "" : "\n";
   
-                  const newStartX = Math.floor(leftUpX + data.p1[0]*width/600);
-                  const newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
-                  const newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
-                  const newEndY = Math.floor(leftUpY + data.p2[1]*height/600);
-                  currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}");`
+                  newStartX = Math.floor(leftUpX + data.p1[0]*width/600);
+                  newStartY = Math.floor(leftUpY + data.p1[1]*height/600);
+                  newEndX = Math.floor(leftUpX + data.p2[0]*width/600);
+                  newEndY = Math.floor(leftUpY + data.p2[1]*height/600);
+                  currentProgram += `${optionalNewLine}line${counter + index} = line([${fillzero(newStartX)}, ${fillzero(newStartY)}], [${fillzero(newEndX)}, ${fillzero(newEndY)}], "${data.color}");`;
                   break;
   
                 case "rect":
                   optionalNewLine = (currentProgram === "" ) ? "" : "\n";
   
-                  const newLeftUpX = Math.floor(leftUpX + data.p[0]*width/600);
-                  const newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
-                  const newWidth = Math.floor(data.width*width/600);
-                  const newHeight = Math.floor(data.height*height/600);
-                  currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}");`
+                  newLeftUpX = Math.floor(leftUpX + data.p[0]*width/600);
+                  newLeftUpY = Math.floor(leftUpY + data.p[1]*height/600);
+                  newWidth = Math.floor(data.width*width/600);
+                  newHeight = Math.floor(data.height*height/600);
+                  currentProgram += `${optionalNewLine}rect${counter + index} = rect([${fillzero(newLeftUpX)}, ${fillzero(newLeftUpY)}], ${fillzero(newWidth)}, ${fillzero(newHeight)}, "${data.color}");`;
                   break;
   
                 case "ellipse":
                   optionalNewLine = (currentProgram === "" ) ? "" : "\n";
   
-                  const newCx = Math.floor(leftUpX + data.p[0]*width/600);
-                  const newCy = Math.floor(leftUpY + data.p[1]*height/600);
-                  const newRx = Math.floor(data.rx*width/600);
-                  const newRy = Math.floor(data.ry*height/600);
-                  currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}");`
+                  newCx = Math.floor(leftUpX + data.p[0]*width/600);
+                  newCy = Math.floor(leftUpY + data.p[1]*height/600);
+                  newRx = Math.floor(data.rx*width/600);
+                  newRy = Math.floor(data.ry*height/600);
+                  currentProgram += `${optionalNewLine}ellipse${counter + index} = ellipse([${fillzero(newCx)}, ${fillzero(newCy)}], ${fillzero(newRx)}, ${fillzero(newRy)}, "${data.color}");`;
                   break;
                 
                 default:
@@ -653,8 +671,8 @@ function App() {
             index++;
           }
   
-          setCounter(counter + index)
-          setProgram(currentProgram)
+          setCounter(counter + index);
+          setProgram(currentProgram);
           break;
   
         default:
@@ -662,7 +680,7 @@ function App() {
       }
     }
 
-  }
+  };
 
   const deleteObject = (currentX, currentY) => {  
     if (currentX <= 0 || currentX >= 600) return;
@@ -690,7 +708,7 @@ function App() {
         .replace(/^\n/, "");
       setProgram(newProgram);
     }
-  }
+  };
 
   const changeColor = (currentX, currentY) => {  
     if (currentX <= 0 || currentX >= 600) return;
@@ -713,10 +731,10 @@ function App() {
       const end = tmpMap["color"]["end"];
 
       const currentProgram = program;
-      const newProgram = `${currentProgram.slice(0, start)}"${color}"${currentProgram.slice(end)}`
+      const newProgram = `${currentProgram.slice(0, start)}"${color}"${currentProgram.slice(end)}`;
       setProgram(newProgram);
     }
-  }
+  };
 
   const changeVarName = (currentX, currentY) => {  
     if (currentX <= 0 || currentX >= 600) return;
@@ -739,10 +757,10 @@ function App() {
       const end = tmpMap["name"]["end"];
 
       const currentProgram = program;
-      const newProgram = `${currentProgram.slice(0, start)}${varName.replace(" ", "")}${currentProgram.slice(end)}`
+      const newProgram = `${currentProgram.slice(0, start)}${varName.replace(" ", "")}${currentProgram.slice(end)}`;
       setProgram(newProgram);
     }
-  }
+  };
 
   return (
     (window.innerWidth > 1220) ? (

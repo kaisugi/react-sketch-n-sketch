@@ -1,45 +1,34 @@
 {
-  "name": "react-sketch-n-sketch",
-  "version": "0.1.0",
-  "private": true,
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack-dev-server"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^26.0.0",
     "@types/node": "^14.0.13",
-    "@types/react": "^16.9.36",
+    "@types/react": "^16.9.38",
+    "@types/react-color": "^3.0.4",
     "@types/react-dom": "^16.9.8",
-    "@zeit-ui/react": "^1.0.0-rc.10",
-    "ace-builds": "^1.4.11",
-    "acorn": "^7.1.1",
+    "@zeit-ui/react": "^1.7.0",
     "react": "^16.13.1",
-    "react-ace": "^8.1.0",
-    "react-color": "^2.18.0",
+    "react-ace": "^9.1.1",
+    "react-color": "^2.18.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "reactcss": "^1.2.3",
     "typescript": "^3.9.5"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@babel/core": "^7.10.3",
+    "@babel/plugin-syntax-jsx": "^7.10.1",
+    "@babel/preset-env": "^7.10.3",
+    "@babel/preset-react": "^7.10.1",
+    "@babel/preset-typescript": "^7.10.1",
+    "@typescript-eslint/eslint-plugin": "^3.4.0",
+    "@typescript-eslint/parser": "^3.4.0",
+    "babel-loader": "^8.1.0",
+    "eslint": "^7.3.1",
+    "eslint-plugin-react": "^7.20.0",
+    "ts-loader": "^7.0.5",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }

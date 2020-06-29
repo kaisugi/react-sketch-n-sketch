@@ -84,7 +84,7 @@ export default (node): LineType | RectType | EllipseType | undefined => {
           color: exp.right.arguments[2].value,
           colorStart: exp.right.arguments[2].start,
           colorEnd: exp.right.arguments[2].end
-        } 
+        }; 
 
       case "rect":
         return {
@@ -106,7 +106,7 @@ export default (node): LineType | RectType | EllipseType | undefined => {
           color: exp.right.arguments[3].value,
           colorStart: exp.right.arguments[3].start,
           colorEnd: exp.right.arguments[3].end
-        }
+        };
 
       case "ellipse":
         return {
@@ -128,11 +128,11 @@ export default (node): LineType | RectType | EllipseType | undefined => {
           color: exp.right.arguments[3].value,
           colorStart: exp.right.arguments[3].start,
           colorEnd: exp.right.arguments[3].end
-        }
+        };
 
       default:
 
     }
 
   } 
-}
+};
