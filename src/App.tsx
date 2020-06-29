@@ -407,7 +407,7 @@ function App() {
     setGroupProgamNodes(Parser.parse(program));
   };
 
-  const movePoints = (currentX, currentY) => {    
+  const movePoints = (currentX: number, currentY: number) => {    
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
 
@@ -547,7 +547,7 @@ function App() {
   };
 
   // ゼロ埋めを見た目消す
-  const deleteZeroPadding = (program) => {
+  const deleteZeroPadding = (program: string) => {
     return program.replace(/[^\da-f](\d{3})[^\da-f]/gi, (match) => {
       if (match[1] === "0" && match[2] === "0") {
         return match[0] + match[3] + match[4];
@@ -559,7 +559,7 @@ function App() {
     });
   };
 
-  const drawObject = (currentX, currentY) => {
+  const drawObject = (currentX: number, currentY: number) => {
     let currentProgram = program;
     let leftUpX;
     let leftUpY;
@@ -710,7 +710,7 @@ function App() {
     }
   };
 
-  const changeColor = (currentX, currentY) => {  
+  const changeColor = (currentX: number, currentY: number) => {  
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
 
@@ -736,14 +736,14 @@ function App() {
     }
   };
 
-  const changeVarName = (currentX, currentY) => {  
+  const changeVarName = (currentX: number, currentY: number) => {  
     if (currentX <= 0 || currentX >= 600) return;
     if (currentY <= 0 || currentY >= 600) return;
 
     let min = 100000000000000;
     let tmpMap;
 
-    if (pointsToPos && pointsToPos.length > 0) {
+    if (pointsToPos && pointsToPos.length > 0 && varName) {
       for (const m of pointsToPos) {
         const tmp = (currentX - m["point"]["value"][0]) * (currentX - m["point"]["value"][0]) 
           + (currentY - m["point"]["value"][1]) * (currentY - m["point"]["value"][1]);
