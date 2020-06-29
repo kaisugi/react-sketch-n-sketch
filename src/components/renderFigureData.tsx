@@ -59,7 +59,7 @@ type EllipseType = {
 }
 
 
-export default (node): LineType | RectType | EllipseType | undefined => {
+export default (node: any): LineType | RectType | EllipseType | undefined => {
 
   //console.log(node)
 
@@ -75,10 +75,10 @@ export default (node): LineType | RectType | EllipseType | undefined => {
           name: exp.left.name,
           nameStart: exp.left.start,
           nameEnd: exp.left.end,
-          p1: exp.right.arguments[0].elements.map(n => Number(n.raw)),
+          p1: exp.right.arguments[0].elements.map((n: any) => Number(n.raw)),
           p1Start: Number(exp.right.arguments[0].start),
           p1End: Number(exp.right.arguments[0].end),
-          p2: exp.right.arguments[1].elements.map(n => Number(n.raw)),
+          p2: exp.right.arguments[1].elements.map((n: any) => Number(n.raw)),
           p2Start: Number(exp.right.arguments[1].start),
           p2End: Number(exp.right.arguments[1].end),
           color: exp.right.arguments[2].value,
@@ -94,7 +94,7 @@ export default (node): LineType | RectType | EllipseType | undefined => {
           name: exp.left.name,
           nameStart: exp.left.start,
           nameEnd: exp.left.end,
-          p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
+          p: exp.right.arguments[0].elements.map((n: any) => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),
           width: Number(exp.right.arguments[1].raw),
@@ -116,7 +116,7 @@ export default (node): LineType | RectType | EllipseType | undefined => {
           name: exp.left.name,
           nameStart: exp.left.start,
           nameEnd: exp.left.end,
-          p: exp.right.arguments[0].elements.map(n => Number(n.raw)),
+          p: exp.right.arguments[0].elements.map((n: any) => Number(n.raw)),
           pStart: Number(exp.right.arguments[0].start),
           pEnd: Number(exp.right.arguments[0].end),
           rx: Number(exp.right.arguments[1].raw),

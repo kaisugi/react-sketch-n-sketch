@@ -5,7 +5,7 @@ import "ace-builds/src-noconflict/theme-monokai";
 
 type EditorProps = {
   program: string;
-  onchange: () => void;
+  onChange: () => void;
 }
 
 export default function editor (props: EditorProps) {
