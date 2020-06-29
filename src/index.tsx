@@ -1,14 +1,13 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import { ZEITUIProvider } from '@zeit-ui/react'
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { ZeitProvider } from "@zeit-ui/react";
 
 ReactDOM.render(
-  <ZEITUIProvider> 
+  <ZeitProvider> 
     <React.StrictMode>
       <App />
     </React.StrictMode>
-  </ZEITUIProvider>,
-  document.getElementById('root')
+  </ZeitProvider>,
+  document.getElementById("root")
 );
