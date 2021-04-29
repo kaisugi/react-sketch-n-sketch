@@ -1,3 +1,5 @@
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
 /* eslint-disable no-undef */
 module.exports = {
   mode: "production",
@@ -41,5 +43,9 @@ module.exports = {
     port: 8000
   },
 
-  performance: { hints: false }
+  performance: { hints: false },
+
+  plugins: [
+    new BundleAnalyzerPlugin()
+  ]
 };
