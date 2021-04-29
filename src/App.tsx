@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Parser } from "acorn";
 import { Button, Checkbox, Input, Modal, Radio, Spacer } from "@zeit-ui/react";
 import { SketchPicker } from "react-color";
-import Editor from "./components/editor";
+const Editor = React.lazy(() => import("./components/editor"));
 import renderFigureData from "./components/renderFigureData";
 import reactCSS from "reactcss";
 
